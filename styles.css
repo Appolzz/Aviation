@@ -1,0 +1,1130 @@
+/* ================================================================
+   LootRadar — Styles
+   Dark-mode aviation dashboard with Fortnite rarity aesthetics
+   ================================================================ */
+
+/* ---------- Design Tokens ---------- */
+:root {
+  /* Base palette */
+  --bg-base:        #0a0e1a;
+  --bg-surface:     #0f172a;
+  --bg-elevated:    #1e293b;
+  --bg-card:        #111827;
+  --bg-card-hover:  #1a2235;
+  --border-subtle:  rgba(255,255,255,0.07);
+  --border-mid:     rgba(255,255,255,0.12);
+
+  /* Text */
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+  --text-inverse:   #0f172a;
+
+  /* Brand */
+  --brand-primary:  #6366f1;
+  --brand-light:    #818cf8;
+  --brand-glow:     rgba(99,102,241,0.3);
+
+  /* Rarity colors */
+  --color-common:     #64748b;
+  --color-uncommon:   #22c55e;
+  --color-rare:       #3b82f6;
+  --color-epic:       #a855f7;
+  --color-legendary:  #f59e0b;
+  --color-mythic:     #ef4444;
+
+  /* Rarity glows */
+  --glow-common:     rgba(100,116,139,0.25);
+  --glow-uncommon:   rgba(34,197,94,0.3);
+  --glow-rare:       rgba(59,130,246,0.35);
+  --glow-epic:       rgba(168,85,247,0.4);
+  --glow-legendary:  rgba(245,158,11,0.4);
+  --glow-mythic:     rgba(239,68,68,0.45);
+
+  /* Spacing */
+  --header-h:    72px;
+  --filter-h:    120px;
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-lg:   18px;
+  --radius-xl:   24px;
+
+  /* Transitions */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  /* Animated gradient background */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99,102,241,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(168,85,247,0.06) 0%, transparent 60%);
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+/* ---------- Typography ---------- */
+h1, h2, h3 { font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
+p { line-height: 1.6; }
+code, .mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85em;
+  background: rgba(255,255,255,0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ================================================================
+   HEADER
+   ================================================================ */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--header-h);
+  background: rgba(10,14,26,0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 40px rgba(0,0,0,0.4);
+}
+
+.header-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.brand-icon {
+  filter: drop-shadow(0 0 12px var(--brand-glow));
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.brand-name {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #818cf8, #c084fc, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.brand-tagline {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.airport-pills {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.airport-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--brand-light);
+  letter-spacing: 0.05em;
+}
+
+.airport-pill::before {
+  content: '📡';
+  font-size: 0.7rem;
+}
+
+.date-banner {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.date-banner strong { color: var(--text-primary); }
+
+.last-updated {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.last-updated .update-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-uncommon);
+  margin-right: 5px;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.btn-vacation {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
+  border: 1px solid rgba(129,140,248,0.3);
+  border-radius: var(--radius-md);
+  color: var(--brand-light);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-vacation:hover {
+  background: linear-gradient(135deg, rgba(99,102,241,0.35), rgba(168,85,247,0.35));
+  border-color: rgba(129,140,248,0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(99,102,241,0.25);
+}
+
+/* ================================================================
+   FILTER SECTION
+   ================================================================ */
+.filter-section {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 90;
+  background: rgba(10,14,26,0.9);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 10px 0 8px;
+}
+
+.filter-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* --- Rarity strip --- */
+.rarity-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2px;
+}
+
+.rarity-strip::-webkit-scrollbar { display: none; }
+
+.rarity-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s var(--ease-out);
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  border: 1.5px solid transparent;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  position: relative;
+  overflow: hidden;
+}
+
+.rarity-pill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.18s;
+  border-radius: inherit;
+}
+
+.rarity-pill:hover { transform: translateY(-1px); color: var(--text-primary); }
+.rarity-pill.active { color: white; }
+
+/* Per-rarity pill colors */
+.rarity-pill.mythic   { --pill-color: var(--color-mythic);   --pill-glow: var(--glow-mythic); }
+.rarity-pill.legendary{ --pill-color: var(--color-legendary); --pill-glow: var(--glow-legendary); }
+.rarity-pill.epic     { --pill-color: var(--color-epic);     --pill-glow: var(--glow-epic); }
+.rarity-pill.rare     { --pill-color: var(--color-rare);     --pill-glow: var(--glow-rare); }
+.rarity-pill.uncommon { --pill-color: var(--color-uncommon); --pill-glow: var(--glow-uncommon); }
+.rarity-pill.common   { --pill-color: var(--color-common);   --pill-glow: var(--glow-common); }
+
+.rarity-pill[class*="mythic"].active,
+.rarity-pill[class*="legendary"].active,
+.rarity-pill[class*="epic"].active,
+.rarity-pill[class*="rare"].active,
+.rarity-pill[class*="uncommon"].active,
+.rarity-pill[class*="common"].active {
+  background: rgba(var(--pill-color-rgb, 100,116,139), 0.18);
+  border-color: var(--pill-color, var(--border-mid));
+  box-shadow: 0 0 12px var(--pill-glow, transparent);
+}
+
+.rarity-pill[data-rarity="all"].active {
+  background: rgba(99,102,241,0.2);
+  border-color: var(--brand-primary);
+  color: var(--brand-light);
+  box-shadow: 0 0 12px var(--brand-glow);
+}
+
+/* Dynamic active coloring via inline style hack */
+.rarity-pill.mythic.active    { background: rgba(239,68,68,0.15);    border-color: #ef4444; box-shadow: 0 0 14px rgba(239,68,68,0.35); }
+.rarity-pill.legendary.active { background: rgba(245,158,11,0.15);   border-color: #f59e0b; box-shadow: 0 0 14px rgba(245,158,11,0.35); }
+.rarity-pill.epic.active      { background: rgba(168,85,247,0.15);   border-color: #a855f7; box-shadow: 0 0 14px rgba(168,85,247,0.35); }
+.rarity-pill.rare.active      { background: rgba(59,130,246,0.15);   border-color: #3b82f6; box-shadow: 0 0 14px rgba(59,130,246,0.35); }
+.rarity-pill.uncommon.active  { background: rgba(34,197,94,0.12);    border-color: #22c55e; box-shadow: 0 0 14px rgba(34,197,94,0.3); }
+.rarity-pill.common.active    { background: rgba(100,116,139,0.15);  border-color: #64748b; box-shadow: 0 0 10px rgba(100,116,139,0.2); }
+
+.pill-emoji { font-size: 0.85em; }
+
+.pill-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background: rgba(0,0,0,0.35);
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* --- Filter row --- */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  gap: 4px;
+}
+
+.filter-tab {
+  padding: 5px 11px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.filter-tab:hover { color: var(--text-primary); border-color: var(--border-mid); }
+
+.filter-tab.active {
+  background: rgba(99,102,241,0.18);
+  border-color: rgba(99,102,241,0.5);
+  color: var(--brand-light);
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Search */
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.search-input {
+  width: 220px;
+  padding: 6px 10px 6px 32px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.search-input::placeholder { color: var(--text-muted); }
+
+.search-input:focus {
+  border-color: rgba(99,102,241,0.5);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+
+/* Hide common toggle */
+.btn-toggle-common {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-toggle-common:hover { color: var(--text-primary); border-color: var(--border-mid); }
+
+.btn-toggle-common.active {
+  background: rgba(239,68,68,0.12);
+  border-color: rgba(239,68,68,0.4);
+  color: #fca5a5;
+}
+
+.result-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+#result-count-num { color: var(--text-secondary); font-weight: 700; }
+
+/* ================================================================
+   FLIGHTS CONTAINER & GRID
+   ================================================================ */
+.flights-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  min-height: calc(100dvh - var(--header-h) - var(--filter-h));
+}
+
+.flights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+/* Loading state */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 100px 20px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--border-mid);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 100px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-icon { font-size: 3rem; }
+.empty-state h2 { font-size: 1.1rem; color: var(--text-secondary); }
+.empty-state p { font-size: 0.85rem; }
+
+.btn-reset {
+  margin-top: 8px;
+  padding: 8px 20px;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: var(--radius-md);
+  color: var(--brand-light);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-reset:hover { background: rgba(99,102,241,0.25); }
+
+/* ================================================================
+   FLIGHT CARD
+   ================================================================ */
+.flight-card {
+  position: relative;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--card-color, var(--border-subtle));
+  overflow: hidden;
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s var(--ease-out);
+  cursor: default;
+  /* Top glow */
+  box-shadow:
+    0 0 0 0px var(--card-glow, transparent),
+    0 4px 24px rgba(0,0,0,0.3);
+  animation: cardIn 0.35s var(--ease-out) both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.flight-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 20px var(--card-glow, transparent),
+    0 12px 40px rgba(0,0,0,0.4);
+}
+
+/* Rarity color stripe at top */
+.flight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--card-color, var(--color-common));
+  box-shadow: 0 0 10px var(--card-glow, transparent);
+}
+
+/* Mythic animated shimmer */
+.flight-card.rarity-mythic::before {
+  background: linear-gradient(90deg, #ef4444, #f97316, #ef4444);
+  background-size: 200% 100%;
+  animation: mythic-shimmer 2s linear infinite;
+}
+
+@keyframes mythic-shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* Legendary shimmer */
+.flight-card.rarity-legendary::before {
+  background: linear-gradient(90deg, #f59e0b, #fde68a, #f59e0b);
+  background-size: 200% 100%;
+  animation: mythic-shimmer 3s linear infinite;
+}
+
+/* --- Card sections --- */
+.card-photo {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+
+.card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s var(--ease-out);
+}
+
+.flight-card:hover .card-photo img { transform: scale(1.04); }
+
+.card-photo-credit {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.7);
+  background: rgba(0,0,0,0.6);
+  padding: 2px 6px;
+  border-radius: 3px;
+  backdrop-filter: blur(4px);
+}
+
+.card-photo-credit a { color: inherit; text-decoration: none; }
+.card-photo-credit a:hover { color: white; }
+
+/* Silhouette placeholder */
+.card-silhouette {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 10px;
+  color: var(--text-muted);
+}
+
+.card-silhouette svg {
+  opacity: 0.25;
+  transition: opacity 0.2s;
+}
+
+.flight-card:hover .card-silhouette svg { opacity: 0.4; }
+
+.btn-load-photo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: var(--radius-sm);
+  color: var(--brand-light);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-load-photo:hover { background: rgba(99,102,241,0.3); }
+
+/* Card body */
+.card-body {
+  padding: 14px 16px 16px;
+}
+
+/* Rarity badge row */
+.card-rarity-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.rarity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+
+.rarity-badge.mythic    { color: #ef4444; border-color: rgba(239,68,68,0.5);    background: rgba(239,68,68,0.12);    text-shadow: 0 0 8px rgba(239,68,68,0.5); }
+.rarity-badge.legendary { color: #f59e0b; border-color: rgba(245,158,11,0.5);   background: rgba(245,158,11,0.1);   text-shadow: 0 0 8px rgba(245,158,11,0.4); }
+.rarity-badge.epic      { color: #c084fc; border-color: rgba(168,85,247,0.5);   background: rgba(168,85,247,0.12);  }
+.rarity-badge.rare      { color: #60a5fa; border-color: rgba(59,130,246,0.5);   background: rgba(59,130,246,0.12);  }
+.rarity-badge.uncommon  { color: #4ade80; border-color: rgba(34,197,94,0.4);    background: rgba(34,197,94,0.1);    }
+.rarity-badge.common    { color: #94a3b8; border-color: rgba(100,116,139,0.35); background: rgba(100,116,139,0.1);  }
+
+.livery-pill {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Airport + time row */
+.card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.airport-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--brand-light);
+  letter-spacing: 0.05em;
+}
+
+.arrival-time {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.02em;
+}
+
+.time-tz {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.status-badge {
+  margin-left: auto;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.status-badge.scheduled { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+.status-badge.active    { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+.status-badge.landed    { background: rgba(100,116,139,0.12); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+.status-badge.delayed   { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.status-badge.cancelled { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+/* Flight info */
+.card-flight-row {
+  margin-bottom: 6px;
+}
+
+.flight-num {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.airline-name {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-left: 6px;
+  font-weight: 500;
+}
+
+/* Route */
+.card-route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.route-origin {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.route-arrow {
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+.route-dest {
+  font-weight: 700;
+  color: var(--brand-light);
+}
+
+.route-terminal {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Aircraft details */
+.card-aircraft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.aircraft-model { font-weight: 600; color: var(--text-primary); }
+.aircraft-type  { 
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-subtle);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+.aircraft-reg {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+}
+
+/* FR24 button */
+.btn-fr24 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255,165,0,0.08);
+  border: 1px solid rgba(255,165,0,0.25);
+  border-radius: var(--radius-md);
+  color: #fbbf24;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.btn-fr24:hover {
+  background: rgba(255,165,0,0.15);
+  border-color: rgba(255,165,0,0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255,165,0,0.15);
+}
+
+/* ================================================================
+   MODAL
+   ================================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(5,8,15,0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s var(--ease-out);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-overlay[hidden] { display: none; }
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(99,102,241,0.08);
+  padding: 32px;
+  animation: slideUp 0.25s var(--ease-spring);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.modal-close:hover { background: rgba(255,255,255,0.1); color: white; }
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.modal-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.modal-header h2 { font-size: 1.4rem; margin-bottom: 8px; }
+.modal-header p { color: var(--text-secondary); font-size: 0.88rem; }
+
+.modal-section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.modal-section h3 { font-size: 0.95rem; margin-bottom: 12px; color: var(--text-primary); }
+.modal-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+
+.modal-current-airports {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.modal-airport-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(99,102,241,0.12);
+  border: 1.5px solid rgba(99,102,241,0.4);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--brand-light);
+  letter-spacing: 0.08em;
+}
+
+/* Preset grid */
+.preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.preset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.preset-card:hover {
+  border-color: rgba(99,102,241,0.4);
+  background: rgba(99,102,241,0.08);
+  transform: translateY(-1px);
+}
+
+.preset-name { font-size: 0.82rem; font-weight: 700; color: var(--text-primary); }
+.preset-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+
+.preset-copy-hint {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.preset-card:hover .preset-copy-hint { opacity: 1; }
+
+/* Modal steps */
+.modal-steps {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-steps li {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.modal-steps strong { color: var(--text-primary); }
+
+/* Buttons */
+.btn-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #1f2937, #111827);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-github:hover {
+  background: linear-gradient(135deg, #374151, #1f2937);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.btn-github.btn-secondary {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+  border-color: rgba(99,102,241,0.35);
+  color: var(--brand-light);
+}
+
+.btn-github.btn-secondary:hover { background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(168,85,247,0.25)); }
+
+/* ================================================================
+   TOAST
+   ================================================================ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  z-index: 300;
+  padding: 10px 20px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transition: transform 0.3s var(--ease-spring), opacity 0.3s;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 900px) {
+  .header-inner {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px 16px;
+    gap: 10px;
+  }
+  .app-header { height: auto; }
+  .brand-name { font-size: 1.2rem; }
+  .header-meta { flex: unset; width: 100%; justify-content: space-between; }
+  .btn-vacation { font-size: 0.75rem; padding: 7px 12px; }
+  .filter-row { flex-direction: column; align-items: flex-start; }
+  .filter-controls { width: 100%; justify-content: space-between; }
+  .search-input { width: 170px; }
+  .flights-grid { grid-template-columns: 1fr; }
+  .preset-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .brand-tagline { display: none; }
+  .date-banner { font-size: 0.75rem; }
+  .rarity-pill { padding: 5px 9px; font-size: 0.72rem; }
+  .pill-label { display: none; }
+  .pill-label-sm { display: inline; }
+}
+
+/* Animated card entrance stagger */
+.flight-card:nth-child(1)  { animation-delay: 0.03s; }
+.flight-card:nth-child(2)  { animation-delay: 0.06s; }
+.flight-card:nth-child(3)  { animation-delay: 0.09s; }
+.flight-card:nth-child(4)  { animation-delay: 0.12s; }
+.flight-card:nth-child(5)  { animation-delay: 0.15s; }
+.flight-card:nth-child(6)  { animation-delay: 0.18s; }
+.flight-card:nth-child(7)  { animation-delay: 0.21s; }
+.flight-card:nth-child(8)  { animation-delay: 0.24s; }
+.flight-card:nth-child(9)  { animation-delay: 0.27s; }
+.flight-card:nth-child(10) { animation-delay: 0.30s; }

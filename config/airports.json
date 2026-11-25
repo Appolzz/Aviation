@@ -1,0 +1,128 @@
+{
+  "_comment": "Edit 'active' to swap airports for a vacation (max 3). Trigger the GitHub Action manually after saving.",
+  "active": ["DCA", "IAD"],
+  "timezone_overrides": {
+    "DCA": "America/New_York",
+    "IAD": "America/New_York",
+    "JFK": "America/New_York",
+    "EWR": "America/New_York",
+    "LGA": "America/New_York",
+    "BOS": "America/New_York",
+    "MIA": "America/New_York",
+    "ATL": "America/New_York",
+    "ORD": "America/Chicago",
+    "MDW": "America/Chicago",
+    "DFW": "America/Chicago",
+    "DAL": "America/Chicago",
+    "DEN": "America/Denver",
+    "SLC": "America/Denver",
+    "LAX": "America/Los_Angeles",
+    "BUR": "America/Los_Angeles",
+    "SFO": "America/Los_Angeles",
+    "SJC": "America/Los_Angeles",
+    "OAK": "America/Los_Angeles",
+    "SEA": "America/Los_Angeles",
+    "PDX": "America/Los_Angeles",
+    "PHX": "America/Phoenix",
+    "LAS": "America/Los_Angeles",
+    "HNL": "Pacific/Honolulu",
+    "ANC": "America/Anchorage",
+    "YYZ": "America/Toronto",
+    "YVR": "America/Vancouver",
+    "LHR": "Europe/London",
+    "LGW": "Europe/London",
+    "STN": "Europe/London",
+    "CDG": "Europe/Paris",
+    "ORY": "Europe/Paris",
+    "AMS": "Europe/Amsterdam",
+    "FRA": "Europe/Berlin",
+    "MUC": "Europe/Berlin",
+    "ZRH": "Europe/Zurich",
+    "MAD": "Europe/Madrid",
+    "BCN": "Europe/Madrid",
+    "FCO": "Europe/Rome",
+    "MXP": "Europe/Rome",
+    "DXB": "Asia/Dubai",
+    "AUH": "Asia/Dubai",
+    "DOH": "Asia/Qatar",
+    "SIN": "Asia/Singapore",
+    "HKG": "Asia/Hong_Kong",
+    "PEK": "Asia/Shanghai",
+    "PVG": "Asia/Shanghai",
+    "CAN": "Asia/Shanghai",
+    "HND": "Asia/Tokyo",
+    "NRT": "Asia/Tokyo",
+    "ICN": "Asia/Seoul",
+    "GMP": "Asia/Seoul",
+    "BKK": "Asia/Bangkok",
+    "KUL": "Asia/Kuala_Lumpur",
+    "CGK": "Asia/Jakarta",
+    "SYD": "Australia/Sydney",
+    "MEL": "Australia/Melbourne",
+    "BNE": "Australia/Brisbane",
+    "GRU": "America/Sao_Paulo",
+    "GIG": "America/Sao_Paulo",
+    "EZE": "America/Argentina/Buenos_Aires",
+    "BOG": "America/Bogota",
+    "LIM": "America/Lima",
+    "SCL": "America/Santiago",
+    "MEX": "America/Mexico_City",
+    "CUN": "America/Cancun",
+    "JNB": "Africa/Johannesburg",
+    "CPT": "Africa/Johannesburg",
+    "NBO": "Africa/Nairobi",
+    "CAI": "Africa/Cairo"
+  },
+  "presets": [
+    {
+      "name": "Home — DCA + IAD",
+      "airports": ["DCA", "IAD"],
+      "description": "Washington D.C. area: Reagan National + Dulles International"
+    },
+    {
+      "name": "Tokyo — HND + NRT",
+      "airports": ["HND", "NRT"],
+      "description": "Tokyo area: Haneda + Narita International"
+    },
+    {
+      "name": "New York — JFK + EWR + LGA",
+      "airports": ["JFK", "EWR", "LGA"],
+      "description": "New York metro: JFK + Newark + LaGuardia"
+    },
+    {
+      "name": "London — LHR + LGW",
+      "airports": ["LHR", "LGW"],
+      "description": "London area: Heathrow + Gatwick"
+    },
+    {
+      "name": "Los Angeles — LAX + BUR",
+      "airports": ["LAX", "BUR"],
+      "description": "LA area: LAX + Burbank (Hollywood Burbank)"
+    },
+    {
+      "name": "San Francisco — SFO + OAK",
+      "airports": ["SFO", "OAK"],
+      "description": "Bay Area: SFO + Oakland"
+    },
+    {
+      "name": "Chicago — ORD + MDW",
+      "airports": ["ORD", "MDW"],
+      "description": "Chicago: O'Hare + Midway"
+    },
+    {
+      "name": "Dubai — DXB",
+      "airports": ["DXB"],
+      "description": "Dubai International — Widebody heaven"
+    },
+    {
+      "name": "Singapore — SIN",
+      "airports": ["SIN"],
+      "description": "Changi International — World's best airport"
+    },
+    {
+      "name": "Hong Kong — HKG",
+      "airports": ["HKG"],
+      "description": "Hong Kong International"
+    }
+  ]
+}

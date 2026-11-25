@@ -1,0 +1,4 @@
+{
+  "_comment": "Photo cache: maps registration/hex to Planespotters photo data. Prevents redundant API calls.",
+  "_format": "REG_OR_HEX: {url, thumbnail, link, photographer, cached_at}"
+}

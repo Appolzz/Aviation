@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LootRadar — Rare Flight & Livery Tracker</title>
+  <meta name="description" content="Track tomorrow's rare aircraft, special liveries, and military visitors at DCA & IAD with Fortnite-style rarity ratings." />
+  <meta name="theme-color" content="#0f172a" />
+
+  <!-- PWA / Home Screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LootRadar" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <!-- Favicon SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ======================== HEADER ======================== -->
+  <header class="app-header" id="app-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="20" fill="url(#brandGrad)"/>
+            <path d="M8 22L20 10L32 22L28 22L28 32L22 32L22 26L18 26L18 32L12 32L12 22Z" fill="white" opacity="0.9"/>
+            <path d="M20 10L32 22L28 22L28 20L20 12L12 20L12 22L8 22Z" fill="white"/>
+            <defs>
+              <linearGradient id="brandGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#6366f1"/>
+                <stop offset="100%" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-name">LootRadar</h1>
+          <p class="brand-tagline">Rare Flight &amp; Livery Tracker</p>
+        </div>
+      </div>
+
+      <div class="header-meta">
+        <div class="airport-pills" id="airport-pills">
+          <!-- filled by app.js -->
+        </div>
+        <div class="date-banner" id="date-banner">
+          <!-- filled by app.js -->
+        </div>
+        <div class="last-updated" id="last-updated">
+          <!-- filled by app.js -->
+        </div>
+      </div>
+
+      <button class="btn-vacation" id="btn-vacation" title="Change tracked airports">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 2 16.5 3.5L13 7 4.8 5.2C4.3 5.1 3.9 5.4 3.8 5.8l-.4 1.5c-.1.5.2 1 .6 1.2L10 11l-3.3 4L4 16l-1 2 2-1 1.3-2.7L10 11l2.5 6c.2.4.7.7 1.2.6l1.5-.4c.4-.1.7-.5.6-1z"/>
+        </svg>
+        Vacation / Swap Airports
+      </button>
+    </div>
+  </header>
+
+  <!-- ======================== FILTER BAR ======================== -->
+  <section class="filter-section" id="filter-section">
+    <div class="filter-inner">
+
+      <!-- Rarity filter pills -->
+      <div class="rarity-strip" id="rarity-strip" role="group" aria-label="Filter by rarity">
+        <button class="rarity-pill active" data-rarity="all" id="pill-all">
+          <span class="pill-label">All</span>
+          <span class="pill-count" id="count-all">0</span>
+        </button>
+        <button class="rarity-pill mythic" data-rarity="Mythic" id="pill-mythic">
+          <span class="pill-emoji">👑</span>
+          <span class="pill-label">Mythic</span>
+          <span class="pill-count" id="count-mythic">0</span>
+        </button>
+        <button class="rarity-pill legendary" data-rarity="Legendary" id="pill-legendary">
+          <span class="pill-emoji">🌟</span>
+          <span class="pill-label">Legendary</span>
+          <span class="pill-count" id="count-legendary">0</span>
+        </button>
+        <button class="rarity-pill epic" data-rarity="Epic" id="pill-epic">
+          <span class="pill-emoji">✨</span>
+          <span class="pill-label">Epic</span>
+          <span class="pill-count" id="count-epic">0</span>
+        </button>
+        <button class="rarity-pill rare" data-rarity="Rare" id="pill-rare">
+          <span class="pill-emoji">💙</span>
+          <span class="pill-label">Rare</span>
+          <span class="pill-count" id="count-rare">0</span>
+        </button>
+        <button class="rarity-pill uncommon" data-rarity="Uncommon" id="pill-uncommon">
+          <span class="pill-emoji">🟢</span>
+          <span class="pill-label">Uncommon</span>
+          <span class="pill-count" id="count-uncommon">0</span>
+        </button>
+        <button class="rarity-pill common" data-rarity="Common" id="pill-common">
+          <span class="pill-emoji">⬜</span>
+          <span class="pill-label">Common</span>
+          <span class="pill-count" id="count-common">0</span>
+        </button>
+      </div>
+
+      <!-- Secondary filters row -->
+      <div class="filter-row">
+        <!-- Airport tabs -->
+        <div class="filter-group" id="airport-filter-group" role="group" aria-label="Filter by airport">
+          <!-- filled by app.js -->
+        </div>
+
+        <!-- Time of day -->
+        <div class="filter-group" role="group" aria-label="Filter by time of day">
+          <button class="filter-tab active" data-time="all" id="time-all">All Day</button>
+          <button class="filter-tab" data-time="morning" id="time-morning">🌅 Morning</button>
+          <button class="filter-tab" data-time="afternoon" id="time-afternoon">☀️ Afternoon</button>
+          <button class="filter-tab" data-time="evening" id="time-evening">🌆 Evening</button>
+          <button class="filter-tab" data-time="night" id="time-night">🌙 Night</button>
+        </div>
+
+        <!-- Right side controls -->
+        <div class="filter-controls">
+          <div class="search-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="search"
+              class="search-input"
+              id="search-input"
+              placeholder="Search airline, tail, origin, type…"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+
+          <button class="btn-toggle-common" id="btn-toggle-common" title="Hide Common Traffic">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+            Hide Common
+          </button>
+
+          <div class="result-count" id="result-count">
+            <span id="result-count-num">0</span> flights
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================== FLIGHTS GRID ======================== -->
+  <main class="flights-container" id="flights-container">
+    <!-- Loading state -->
+    <div class="loading-state" id="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading flight data…</p>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="empty-state" hidden>
+      <div class="empty-icon">🛬</div>
+      <h2>No flights match your filters</h2>
+      <p>Try broadening your search or changing the rarity filter.</p>
+      <button class="btn-reset" id="btn-reset-filters">Reset Filters</button>
+    </div>
+
+    <!-- Flight cards grid -->
+    <div class="flights-grid" id="flights-grid" hidden></div>
+  </main>
+
+  <!-- ======================== VACATION MODAL ======================== -->
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal" id="modal-vacation">
+      <button class="modal-close" id="modal-close" aria-label="Close modal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+
+      <div class="modal-header">
+        <div class="modal-icon">✈️</div>
+        <h2 id="modal-title">Vacation / Swap Airports</h2>
+        <p>Track up to 3 airports at a time. Edit <code>config/airports.json</code> in your GitHub repo, then run the Action.</p>
+      </div>
+
+      <div class="modal-section">
+        <h3>Currently Tracking</h3>
+        <div class="modal-current-airports" id="modal-current-airports">
+          <!-- filled by app.js -->
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>✈️ Popular Presets</h3>
+        <p class="modal-hint">Click to copy the JSON for <code>config/airports.json</code></p>
+        <div class="preset-grid" id="preset-grid">
+          <!-- presets filled by app.js -->
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>🛠 How to Swap Airports</h3>
+        <ol class="modal-steps">
+          <li>Open your GitHub repo → <code>config/airports.json</code></li>
+          <li>Change the <code>"active"</code> array to your desired airports (max 3)</li>
+          <li>Commit the change</li>
+          <li>Go to <strong>Actions</strong> tab → <em>Update LootRadar Arrivals</em> → <strong>Run workflow</strong></li>
+          <li>Wait ~2 minutes, then refresh this page!</li>
+        </ol>
+        <a class="btn-github" id="btn-open-github" href="https://github.com/Appolzz/Aviation/edit/main/config/airports.json" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.207 11.387.6.11.793-.26.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          Edit airports.json on GitHub
+        </a>
+      </div>
+
+      <div class="modal-section">
+        <h3>⚡ Trigger Manual Update</h3>
+        <p>After changing airports, force a fresh data pull right now:</p>
+        <a class="btn-github btn-secondary" href="https://github.com/Appolzz/Aviation/actions/workflows/update.yml" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Run GitHub Action Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== TOAST ======================== -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

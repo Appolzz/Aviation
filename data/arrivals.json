@@ -1,0 +1,537 @@
+{
+  "_meta": {
+    "generated": "2026-11-25T00:30:00Z",
+    "target_date": "2026-11-25",
+    "airports": ["DCA", "IAD"],
+    "total_flights": 12,
+    "rarity_counts": {
+      "Mythic": 1,
+      "Legendary": 1,
+      "Epic": 2,
+      "Rare": 2,
+      "Uncommon": 3,
+      "Common": 3
+    },
+    "last_updated_utc": "2026-11-24T00:31:42Z",
+    "last_updated_local": "2026-11-23T19:31:42-05:00",
+    "is_sample_data": true
+  },
+  "flights": [
+    {
+      "id": "2026-11-25_DCA_AA2167_N921NN",
+      "airport": "DCA",
+      "flight_number": "AA2167",
+      "airline": {
+        "name": "American Airlines",
+        "iata": "AA",
+        "icao": "AAL"
+      },
+      "origin": {
+        "iata": "MIA",
+        "icao": "KMIA",
+        "name": "Miami International"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T08:14:00-05:00",
+        "scheduled_utc": "2026-11-25T13:14:00Z",
+        "revised_local": null,
+        "terminal": "B",
+        "gate": "B22"
+      },
+      "aircraft": {
+        "reg": "N921NN",
+        "modeS": "AE1467",
+        "model": "Boeing 737-823",
+        "icao_type": "B738"
+      },
+      "rarity": "Epic",
+      "rarity_reason": "AA Retro Astrojet Heritage Livery",
+      "rarity_color": "#a855f7",
+      "livery_or_note": "American Airlines Astrojet Retro Livery",
+      "plane_alert_match": true,
+      "plane_alert_category": "Special",
+      "plane_alert_tags": ["Retro Livery", "Heritage", "Astrojet"],
+      "photo": {
+        "url": "https://cdn.planespotters.net/pub/photos/original/N921NN.jpg",
+        "thumbnail": "https://cdn.planespotters.net/pub/photos/thumbnail_large/N921NN.jpg",
+        "link": "https://www.planespotters.net/photo/00/N921NN",
+        "photographer": "John Smith"
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/AA2167"
+    },
+    {
+      "id": "2026-11-25_IAD_LH416_D-ABYM",
+      "airport": "IAD",
+      "flight_number": "LH416",
+      "airline": {
+        "name": "Lufthansa",
+        "iata": "LH",
+        "icao": "DLH"
+      },
+      "origin": {
+        "iata": "FRA",
+        "icao": "EDDF",
+        "name": "Frankfurt am Main"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T14:30:00-05:00",
+        "scheduled_utc": "2026-11-25T19:30:00Z",
+        "revised_local": null,
+        "terminal": "A",
+        "gate": "A30"
+      },
+      "aircraft": {
+        "reg": "D-ABYM",
+        "modeS": "3C6600",
+        "model": "Boeing 747-830",
+        "icao_type": "B748"
+      },
+      "rarity": "Legendary",
+      "rarity_reason": "Quad-Jet / Ultra-Rare Heavy",
+      "rarity_color": "#f59e0b",
+      "livery_or_note": "Lufthansa Boeing 747-8 (B748)",
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/LH416"
+    },
+    {
+      "id": "2026-11-25_IAD_UA935_N45905",
+      "airport": "IAD",
+      "flight_number": "UA935",
+      "airline": {
+        "name": "United Airlines",
+        "iata": "UA",
+        "icao": "UAL"
+      },
+      "origin": {
+        "iata": "NRT",
+        "icao": "RJAA",
+        "name": "Narita International"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T10:45:00-05:00",
+        "scheduled_utc": "2026-11-25T15:45:00Z",
+        "revised_local": null,
+        "terminal": "C",
+        "gate": "C6"
+      },
+      "aircraft": {
+        "reg": "N45905",
+        "modeS": "ACDC12",
+        "model": "Boeing 777-222",
+        "icao_type": "B772"
+      },
+      "rarity": "Uncommon",
+      "rarity_reason": "Standard IAD Widebody / Larger Narrowbody",
+      "rarity_color": "#22c55e",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/UA935"
+    },
+    {
+      "id": "2026-11-25_IAD_EI105_EI-DAA",
+      "airport": "IAD",
+      "flight_number": "EI105",
+      "airline": {
+        "name": "Aer Lingus",
+        "iata": "EI",
+        "icao": "EIN"
+      },
+      "origin": {
+        "iata": "DUB",
+        "icao": "EIDW",
+        "name": "Dublin"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T12:10:00-05:00",
+        "scheduled_utc": "2026-11-25T17:10:00Z",
+        "revised_local": null,
+        "terminal": "A",
+        "gate": "A18"
+      },
+      "aircraft": {
+        "reg": "EI-DAA",
+        "modeS": "4CA84E",
+        "model": "Airbus A330-302",
+        "icao_type": "A333"
+      },
+      "rarity": "Uncommon",
+      "rarity_reason": "Standard IAD Widebody / Larger Narrowbody",
+      "rarity_color": "#22c55e",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/EI105"
+    },
+    {
+      "id": "2026-11-25_DCA_SW1234_N8831M",
+      "airport": "DCA",
+      "flight_number": "WN1234",
+      "airline": {
+        "name": "Southwest Airlines",
+        "iata": "WN",
+        "icao": "SWA"
+      },
+      "origin": {
+        "iata": "BNA",
+        "icao": "KBNA",
+        "name": "Nashville International"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T16:55:00-05:00",
+        "scheduled_utc": "2026-11-25T21:55:00Z",
+        "revised_local": null,
+        "terminal": "C",
+        "gate": "C14"
+      },
+      "aircraft": {
+        "reg": "N8831M",
+        "modeS": "AECB7A",
+        "model": "Boeing 737 MAX 8",
+        "icao_type": "B38M"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/WN1234"
+    },
+    {
+      "id": "2026-11-25_IAD_OS91_OE-LPD",
+      "airport": "IAD",
+      "flight_number": "OS91",
+      "airline": {
+        "name": "Austrian Airlines",
+        "iata": "OS",
+        "icao": "AUA"
+      },
+      "origin": {
+        "iata": "VIE",
+        "icao": "LOWW",
+        "name": "Vienna International"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T11:20:00-05:00",
+        "scheduled_utc": "2026-11-25T16:20:00Z",
+        "revised_local": null,
+        "terminal": "A",
+        "gate": "A25"
+      },
+      "aircraft": {
+        "reg": "OE-LPD",
+        "modeS": "440186",
+        "model": "Boeing 767-3Z9ER",
+        "icao_type": "B763"
+      },
+      "rarity": "Uncommon",
+      "rarity_reason": "Standard IAD Widebody / Larger Narrowbody",
+      "rarity_color": "#22c55e",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/OS91"
+    },
+    {
+      "id": "2026-11-25_IAD_KU101_9K-AOH",
+      "airport": "IAD",
+      "flight_number": "KU101",
+      "airline": {
+        "name": "Kuwait Airways",
+        "iata": "KU",
+        "icao": "KAC"
+      },
+      "origin": {
+        "iata": "KWI",
+        "icao": "OKBK",
+        "name": "Kuwait International"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T16:45:00-05:00",
+        "scheduled_utc": "2026-11-25T21:45:00Z",
+        "revised_local": null,
+        "terminal": "A",
+        "gate": "A12"
+      },
+      "aircraft": {
+        "reg": "9K-AOH",
+        "modeS": "900015",
+        "model": "Airbus A330-243",
+        "icao_type": "A332"
+      },
+      "rarity": "Rare",
+      "rarity_reason": "Less-Common Widebody / Heavy Freighter",
+      "rarity_color": "#3b82f6",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/KU101"
+    },
+    {
+      "id": "2026-11-25_DCA_AA1_N178AN",
+      "airport": "DCA",
+      "flight_number": "AA1",
+      "airline": {
+        "name": "American Airlines",
+        "iata": "AA",
+        "icao": "AAL"
+      },
+      "origin": {
+        "iata": "LAX",
+        "icao": "KLAX",
+        "name": "Los Angeles International"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T19:30:00-05:00",
+        "scheduled_utc": "2026-11-25T00:30:00Z",
+        "revised_local": null,
+        "terminal": "B",
+        "gate": "B50"
+      },
+      "aircraft": {
+        "reg": "N178AN",
+        "modeS": "A95C07",
+        "model": "Boeing 757-223",
+        "icao_type": "B752"
+      },
+      "rarity": "Rare",
+      "rarity_reason": "Rare Visitor at DCA",
+      "rarity_color": "#3b82f6",
+      "livery_or_note": "757-200 — Transcon DCA Special",
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/AA1"
+    },
+    {
+      "id": "2026-11-25_DCA_UA5678_N12345",
+      "airport": "DCA",
+      "flight_number": "UA5678",
+      "airline": {
+        "name": "United Express (SkyWest)",
+        "iata": "UA",
+        "icao": "SKW"
+      },
+      "origin": {
+        "iata": "ORD",
+        "icao": "KORD",
+        "name": "Chicago O'Hare"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T07:40:00-05:00",
+        "scheduled_utc": "2026-11-25T12:40:00Z",
+        "revised_local": null,
+        "terminal": "A",
+        "gate": "A5"
+      },
+      "aircraft": {
+        "reg": "N12345",
+        "modeS": "A0F4D1",
+        "model": "Bombardier CRJ-700",
+        "icao_type": "CRJ7"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/UA5678"
+    },
+    {
+      "id": "2026-11-25_IAD_SQ106_9V-SME",
+      "airport": "IAD",
+      "flight_number": "SQ106",
+      "airline": {
+        "name": "Singapore Airlines",
+        "iata": "SQ",
+        "icao": "SIA"
+      },
+      "origin": {
+        "iata": "SIN",
+        "icao": "WSSS",
+        "name": "Singapore Changi"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T06:50:00-05:00",
+        "scheduled_utc": "2026-11-25T11:50:00Z",
+        "revised_local": null,
+        "terminal": "A",
+        "gate": "A42"
+      },
+      "aircraft": {
+        "reg": "9V-SME",
+        "modeS": "76CE16",
+        "model": "Boeing 777-312ER",
+        "icao_type": "B77W"
+      },
+      "rarity": "Uncommon",
+      "rarity_reason": "Standard IAD Widebody / Larger Narrowbody",
+      "rarity_color": "#22c55e",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/SQ106"
+    },
+    {
+      "id": "2026-11-25_IAD_UA1_84000001",
+      "airport": "IAD",
+      "flight_number": "SAM970",
+      "airline": {
+        "name": "United States Air Force",
+        "iata": null,
+        "icao": "USAF"
+      },
+      "origin": {
+        "iata": "JBA",
+        "icao": "KADW",
+        "name": "Joint Base Andrews"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T13:00:00-05:00",
+        "scheduled_utc": "2026-11-25T18:00:00Z",
+        "revised_local": null,
+        "terminal": null,
+        "gate": null
+      },
+      "aircraft": {
+        "reg": "84000001",
+        "modeS": "AE0001",
+        "model": "Boeing C-17A Globemaster III",
+        "icao_type": "C17"
+      },
+      "rarity": "Mythic",
+      "rarity_reason": "Military / Government Aircraft",
+      "rarity_color": "#ef4444",
+      "livery_or_note": "USAF C-17 Globemaster III",
+      "plane_alert_match": true,
+      "plane_alert_category": "Military",
+      "plane_alert_tags": ["Military", "Cargo", "USAF"],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/SAM970"
+    },
+    {
+      "id": "2026-11-25_IAD_WN5566_N8818M",
+      "airport": "DCA",
+      "flight_number": "DL2051",
+      "airline": {
+        "name": "Delta Air Lines",
+        "iata": "DL",
+        "icao": "DAL"
+      },
+      "origin": {
+        "iata": "ATL",
+        "icao": "KATL",
+        "name": "Hartsfield-Jackson Atlanta"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-25T09:25:00-05:00",
+        "scheduled_utc": "2026-11-25T14:25:00Z",
+        "revised_local": null,
+        "terminal": "C",
+        "gate": "C32"
+      },
+      "aircraft": {
+        "reg": "N8818M",
+        "modeS": "AECB2A",
+        "model": "Boeing 737-932ER",
+        "icao_type": "B739"
+      },
+      "rarity": "Epic",
+      "rarity_reason": "Delta 'Keep Climbing' Special Livery",
+      "rarity_color": "#a855f7",
+      "livery_or_note": "Delta Special Scheme — Keep Climbing",
+      "plane_alert_match": true,
+      "plane_alert_category": "Special",
+      "plane_alert_tags": ["Special Livery", "Delta", "Keep Climbing"],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/DL2051"
+    }
+  ]
+}

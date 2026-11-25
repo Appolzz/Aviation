@@ -1,0 +1,247 @@
+{
+  "_comment": "Airport-calibrated Fortnite rarity tiers. Profiles: DCA, IAD, DEFAULT.",
+  "profiles": {
+    "DCA": {
+      "_description": "Reagan National — Perimeter rule, short runway, domestic focused",
+      "mythic": {
+        "icao_types": ["C17", "C130", "C5M", "C5A", "T38", "T1", "F16", "F15", "F22", "F35", "B52", "KC135", "KC46", "E3", "E4B", "E6B", "V22", "P8", "P3", "C40", "C32", "C37", "C12", "U2", "SR71", "VC25", "C21", "C20", "UC35", "C560", "BE20", "C550"],
+        "plane_alert_categories": ["Military", "Government", "VIP", "Historic", "Test"],
+        "reason_template": "Military / Government Aircraft"
+      },
+      "legendary": {
+        "icao_types": ["B763", "B764", "B772", "B77W", "B77L", "B788", "B789", "B78X", "A332", "A333", "A339", "A359", "A35K", "B748", "B744", "A388", "A346", "A343", "MD11", "DC10", "AN124", "IL76", "B742"],
+        "reason_template": "Widebody at DCA — Extremely Rare"
+      },
+      "epic": {
+        "icao_types": ["B753"],
+        "plane_alert_match": true,
+        "reason_template": "Special / Heritage Livery"
+      },
+      "rare": {
+        "icao_types": ["B752", "A21N", "B712", "F100", "B463", "AT72", "AT76", "DH8D", "BE99", "PC12", "LJ45", "C25A", "C25B", "C25C", "GL5T", "GLEX", "G280", "G150", "C750", "CL35", "CL60", "FA7X", "FA8X", "E50P"],
+        "reason_template": "Rare Visitor at DCA"
+      },
+      "uncommon": {
+        "icao_types": ["B739", "B39M", "E190", "E195", "E290", "E295", "BCS1", "BCS3", "A220", "A20N"],
+        "reason_template": "Uncommon Type at DCA"
+      },
+      "common": {
+        "icao_types": ["CRJ2", "CRJ7", "CRJ9", "CRJX", "E170", "E175", "E75L", "E75S", "A319", "A320", "A321", "B737", "B738", "B38M", "B736", "SF34", "DH8C", "DH8A"],
+        "reason_template": "Standard DCA Traffic"
+      }
+    },
+    "IAD": {
+      "_description": "Dulles International — Major international & long-haul hub",
+      "mythic": {
+        "icao_types": ["C17", "C130", "C5M", "C5A", "T38", "F16", "F15", "F22", "F35", "B52", "KC135", "KC46", "E3", "E4B", "E6B", "V22", "P8", "P3", "C40", "C32", "C37", "VC25", "C21", "C20", "U2"],
+        "plane_alert_categories": ["Military", "Government", "VIP", "Historic", "Test"],
+        "reason_template": "Military / Government Aircraft"
+      },
+      "legendary": {
+        "icao_types": ["B748", "B744", "A388", "A346", "A343", "MD11", "DC10", "AN124", "IL76", "B742"],
+        "reason_template": "Quad-Jet / Ultra-Rare Heavy"
+      },
+      "epic": {
+        "icao_types": [],
+        "plane_alert_match": true,
+        "reason_template": "Special / Alliance / Heritage Livery"
+      },
+      "rare": {
+        "icao_types": ["B764", "A332", "A339", "A35K", "B77L", "A306", "B742", "B763", "AT72", "AT76"],
+        "reason_template": "Less-Common Widebody / Heavy Freighter"
+      },
+      "uncommon": {
+        "icao_types": ["B772", "B77W", "B788", "B789", "B78X", "A333", "A359", "B752", "B753", "BCS1", "BCS3", "A220", "A21N"],
+        "reason_template": "Standard IAD Widebody / Larger Narrowbody"
+      },
+      "common": {
+        "icao_types": ["CRJ2", "CRJ7", "CRJ9", "CRJX", "E145", "E170", "E175", "E75L", "E75S", "B737", "B738", "B739", "B38M", "B39M", "A319", "A320", "A321", "A20N", "SF34", "DH8D", "DH8C"],
+        "reason_template": "Standard IAD Domestic / Regional Traffic"
+      }
+    },
+    "DEFAULT": {
+      "_description": "Any vacation airport — international/hub calibrated",
+      "mythic": {
+        "icao_types": ["C17", "C130", "C5M", "C5A", "T38", "F16", "F15", "F22", "F35", "B52", "KC135", "KC46", "E3", "E4B", "E6B", "V22", "P8", "VC25", "C40", "C32", "C37"],
+        "plane_alert_categories": ["Military", "Government", "VIP"],
+        "reason_template": "Military / Government VIP Aircraft"
+      },
+      "legendary": {
+        "icao_types": ["B748", "B744", "A388", "A346", "A343", "MD11", "DC10", "AN124", "IL76", "B742"],
+        "reason_template": "Quad-Jet / Ultra-Rare Heavy"
+      },
+      "epic": {
+        "icao_types": [],
+        "plane_alert_match": true,
+        "reason_template": "Special / Retro / Alliance Livery"
+      },
+      "rare": {
+        "icao_types": ["B77W", "B77L", "B78X", "A359", "A35K", "B764", "A339"],
+        "reason_template": "Long-Haul Widebody"
+      },
+      "uncommon": {
+        "icao_types": ["B772", "B788", "B789", "A332", "A333", "B763", "B752", "B753", "BCS3", "A220"],
+        "reason_template": "Mid-Size Widebody / Larger Narrowbody"
+      },
+      "common": {
+        "icao_types": ["B737", "B738", "B739", "B38M", "B39M", "A319", "A320", "A321", "A21N", "A20N", "BCS1", "E75L", "E75S", "E170", "E175", "CRJ7", "CRJ9", "CRJX", "AT72", "AT76", "DH8D", "DH8C", "SF34", "E145", "E190", "E195"],
+        "reason_template": "Standard Regional / Narrowbody Traffic"
+      }
+    }
+  },
+  "icao_type_normalization": {
+    "_comment": "Maps raw AeroDataBox model strings to standard 4-char ICAO codes via keyword matching (applied in Python script). Priority: first match wins.",
+    "keywords": [
+      ["VC-25", "VC25"],
+      ["Air Force One", "VC25"],
+      ["C-17", "C17"],
+      ["Globemaster", "C17"],
+      ["C-130", "C130"],
+      ["Hercules", "C130"],
+      ["C-5", "C5M"],
+      ["Galaxy", "C5M"],
+      ["T-38", "T38"],
+      ["Talon", "T38"],
+      ["KC-135", "KC135"],
+      ["KC-46", "KC46"],
+      ["Pegasus", "KC46"],
+      ["E-4B", "E4B"],
+      ["Nightwatch", "E4B"],
+      ["E-6B", "E6B"],
+      ["Mercury", "E6B"],
+      ["C-40", "C40"],
+      ["C-32", "C32"],
+      ["C-37", "C37"],
+      ["V-22", "V22"],
+      ["Osprey", "V22"],
+      ["P-8", "P8"],
+      ["Poseidon", "P8"],
+      ["B-52", "B52"],
+      ["Stratofortress", "B52"],
+      ["F-16", "F16"],
+      ["F-15", "F15"],
+      ["F-22", "F22"],
+      ["F-35", "F35"],
+      ["AN-124", "AN124"],
+      ["Ruslan", "AN124"],
+      ["AN-225", "AN225"],
+      ["Mriya", "AN225"],
+      ["IL-76", "IL76"],
+      ["747-8", "B748"],
+      ["747-400F", "B744"],
+      ["747-400", "B744"],
+      ["747-200", "B742"],
+      ["747-100", "B741"],
+      ["A380", "A388"],
+      ["A350-1000", "A35K"],
+      ["A350-900", "A359"],
+      ["A340-600", "A346"],
+      ["A340-300", "A343"],
+      ["A340", "A343"],
+      ["A330-900", "A339"],
+      ["A330-800", "A338"],
+      ["A330-300", "A333"],
+      ["A330-200F", "A332"],
+      ["A330-200", "A332"],
+      ["A330", "A333"],
+      ["A321XLR", "A21N"],
+      ["A321neo", "A21N"],
+      ["A321", "A321"],
+      ["A320neo", "A20N"],
+      ["A320", "A320"],
+      ["A319neo", "A19N"],
+      ["A319", "A319"],
+      ["A318", "A318"],
+      ["A220-300", "BCS3"],
+      ["A220-100", "BCS1"],
+      ["CS300", "BCS3"],
+      ["CS100", "BCS1"],
+      ["787-10", "B78X"],
+      ["787-9", "B789"],
+      ["787-8", "B788"],
+      ["777-300ER", "B77W"],
+      ["777-300", "B773"],
+      ["777-200LR", "B77L"],
+      ["777-200ER", "B772"],
+      ["777-200", "B772"],
+      ["777F", "B77L"],
+      ["767-400", "B764"],
+      ["767-300ER", "B763"],
+      ["767-300", "B763"],
+      ["767-200", "B762"],
+      ["757-300", "B753"],
+      ["757-200", "B752"],
+      ["737 MAX 10", "B39M"],
+      ["737 MAX 9", "B39M"],
+      ["737 MAX 8", "B38M"],
+      ["737 MAX 7", "B37M"],
+      ["737-900ER", "B739"],
+      ["737-900", "B739"],
+      ["737-800", "B738"],
+      ["737-700", "B737"],
+      ["737-600", "B736"],
+      ["737-500", "B735"],
+      ["MD-11", "MD11"],
+      ["MD-90", "MD90"],
+      ["MD-83", "MD83"],
+      ["MD-82", "MD82"],
+      ["MD-81", "MD81"],
+      ["DC-10", "DC10"],
+      ["DC-9", "DC91"],
+      ["ERJ-195-E2", "E295"],
+      ["ERJ-190-E2", "E290"],
+      ["ERJ-175", "E175"],
+      ["ERJ-170", "E170"],
+      ["ERJ-145", "E145"],
+      ["ERJ-135", "E135"],
+      ["E195", "E195"],
+      ["E190", "E190"],
+      ["E175", "E175"],
+      ["E170", "E170"],
+      ["E145", "E145"],
+      ["CRJ-900", "CRJ9"],
+      ["CRJ-700", "CRJ7"],
+      ["CRJ-200", "CRJ2"],
+      ["CRJ-100", "CRJ1"],
+      ["Challenger 850", "CRJX"],
+      ["ATR 72", "AT72"],
+      ["ATR 42", "AT43"],
+      ["Q400", "DH8D"],
+      ["Dash 8", "DH8D"],
+      ["Fokker 100", "F100"],
+      ["BAe 146", "B461"],
+      ["Avro RJ", "AVRO"],
+      ["Gulfstream G650", "G650"],
+      ["Gulfstream G600", "G600"],
+      ["Gulfstream G550", "G550"],
+      ["Gulfstream G500", "G500"],
+      ["Gulfstream G450", "GL5T"],
+      ["Gulfstream G280", "G280"],
+      ["Gulfstream G150", "G150"],
+      ["Global Express", "GLEX"],
+      ["Global 7500", "GL7T"],
+      ["Global 6000", "GL6T"],
+      ["Global 5500", "GL5T"],
+      ["Challenger 605", "CL35"],
+      ["Challenger 350", "CL35"],
+      ["Challenger 300", "CL30"],
+      ["Learjet 75", "LJ75"],
+      ["Learjet 70", "LJ75"],
+      ["Learjet 60", "LJ60"],
+      ["Learjet 45", "LJ45"],
+      ["Citation X", "C750"],
+      ["Citation Longitude", "C700"],
+      ["Citation Latitude", "C68A"],
+      ["Citation Sovereign", "C680"],
+      ["Citation XLS", "C56X"],
+      ["Citation CJ4", "C25C"],
+      ["Citation CJ3", "C25B"],
+      ["Citation CJ2", "C25A"],
+      ["Phenom 300", "E55P"],
+      ["Phenom 100", "E50P"],
+      ["King Air", "BE20"],
+      ["Caravan", "C208"],
+      ["PC-12", "PC12"]
+    ]
+  }
+}

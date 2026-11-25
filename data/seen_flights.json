@@ -1,0 +1,4 @@
+{
+  "_comment": "Tracks notified flight keys to prevent duplicate ntfy.sh alerts. Keys auto-pruned after 7 days.",
+  "_format": "YYYY-MM-DD_AIRPORT_FLIGHT_REG: ISO8601_notification_timestamp"
+}
