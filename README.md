@@ -8,7 +8,7 @@ FlightAware lists `GET /airports/{id}/flights/scheduled_arrivals` at **$0.005 pe
 
 This is a software safety stop, not an account-level billing lock. FlightAware says usage reporting can lag around 10 minutes; other applications using the same AeroAPI account can consume the same credit. Keep the API key private and review usage in the FlightAware portal. The local ledger helps account for this project's current run even while FlightAware's usage page is delayed.
 
-The workflow asks for one result set at a time (`max_pages=1`) and follows every pagination cursor until all available results are retrieved or the monthly $4.25 ceiling is reached. It sleeps seven seconds between result sets, below the Personal plan's 10 result sets/minute limit. There is no per-run or per-airport page ceiling. If the monthly cap stops a run, the dashboard marks that refresh as potentially incomplete.
+The workflow asks for one result set at a time (`max_pages=1`) and follows every pagination cursor until all available results are retrieved or the monthly $4.25 ceiling is reached. It sleeps seven seconds between result sets, below the Personal plan's 10 result sets/minute limit. There is no per-run or per-airport page ceiling. If any airport fetch is interrupted, or an established airport unexpectedly returns zero timed arrivals, the run fails and keeps the last complete dashboard data instead of publishing a partial airport list. Rows without a scheduled arrival time are omitted.
 
 ## Set up FlightAware
 
@@ -32,7 +32,7 @@ Airport time zones are configured in `timezone_overrides`. Each update uses a ro
 - New Rare, Epic, Legendary, and Mythic flights can be sent to ntfy; seen flight keys older than seven days are pruned.
 - The pipeline caches Planespotters photo URLs in `data/photo_cache.json` and queries photos for up to 60 Uncommon+ aircraft each run. Common cards can load a photo in the browser.
 - `config/rarity_rules.json` contains DCA, IAD, and DEFAULT (vacation airport) profiles and model normalization rules.
-- Copa Airlines arrivals are classified Rare. Other airlines are at least Uncommon, except United, Delta, American, Frontier, Alaska, and Southwest; aircraft already classed above Uncommon keep the higher tier.
+- Copa Airlines arrivals are classified Rare. Other flights are classified by aircraft type and special livery, so common regional and narrowbody aircraft stay Common regardless of operator.
 - Each flight card has a **Set rarity** control. Overrides are saved in this browser and reapplied when future flight data refreshes. They do not sync to other browsers or devices.
 - The source is scheduled-arrival data, not an operational airport feed. It includes available filed schedules, but cancellations, schedule changes, private aircraft, and provider coverage can still make it differ from Flightradar24 or actual operations. Gaps between scheduled arrivals may also be real quiet periods.
 

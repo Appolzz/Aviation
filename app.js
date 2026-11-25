@@ -154,8 +154,8 @@ function formatArrivalDate(flight) {
   if (!local) return '';
   const match = local.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (!match) return '';
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+  return date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric' });
 }
 
 /**
@@ -307,11 +307,14 @@ function applyFilters(flights) {
 // Rendering
 // ============================================================
 
-function renderAirportPills(airports) {
+function renderAirportPills(airports, counts = {}) {
   const container = document.getElementById('airport-pills');
-  container.innerHTML = airports.map(a => `
-    <div class="airport-pill">${esc(a)}</div>
-  `).join('');
+  container.innerHTML = airports.map(a => {
+    const count = counts[a] ?? state.flights.filter(f => f.airport === a).length;
+    return `<div class="airport-pill" title="${esc(a)}: ${count} arrivals in this refresh">
+      ${esc(a)}<span class="airport-pill-count">${count}</span>
+    </div>`;
+  }).join('');
 }
 
 function renderDateBanner(meta) {
@@ -336,7 +339,9 @@ function renderDateBanner(meta) {
       return `${airports.join('/')} local: ${startText} – ${endText} ${zoneText}`;
     });
     const rangeText = ranges.length ? ` · ${ranges.join(' · ')}` : '';
-    const partialText = meta.fetch_complete === false
+    const partialText = meta.refresh_note
+      ? ` · ${esc(meta.refresh_note)}`
+      : meta.fetch_complete === false
       ? ' · Some results could not be fetched; this list may be incomplete.'
       : '';
     const hoursText = meta.excluded_local_hours === '22:00-06:00'
@@ -761,7 +766,7 @@ async function loadData() {
     state.presets = airportsConfig.presets || [];
 
     // Header
-    renderAirportPills(state.airports);
+    renderAirportPills(state.airports, state.meta.airport_flight_counts);
     renderDateBanner(state.meta);
     renderLastUpdated(state.meta);
     renderBudget(state.meta);

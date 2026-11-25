@@ -16,7 +16,7 @@ import os
 import re
 import sys
 import time
-from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote, urlencode, urljoin, urlsplit, urlunsplit
 from datetime import date, datetime, time as datetime_time, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -301,24 +301,12 @@ def classify_rarity(
     airline_icao = (airline.get("icao") or "").strip().upper()
     airline_name = re.sub(r"[^A-Z0-9]+", " ", (airline.get("name") or "").upper()).strip()
 
-    allowed_airline_codes = {"UA", "UAL", "DL", "DAL", "AA", "AAL", "F9", "FFT", "AS", "ASA", "WN", "SWA"}
-    allowed_airline_names = {
-        "UNITED", "UNITED AIRLINES", "DELTA", "DELTA AIR LINES", "AMERICAN", "AMERICAN AIRLINES",
-        "FRONTIER", "FRONTIER AIRLINES", "ALASKA", "ALASKA AIRLINES", "SOUTHWEST", "SOUTHWEST AIRLINES",
-    }
     is_copa = airline_code == "CM" or airline_icao == "CMP" or "COPA" in airline_name
-    is_listed_airline = (
-        airline_code in allowed_airline_codes or airline_icao in allowed_airline_codes
-        or airline_name in allowed_airline_names
-    )
 
     def apply_airline_rule(rarity: str, reason: str) -> tuple[str, str]:
         # Copa is explicitly a Rare airline, regardless of the common narrowbody types it flies.
         if is_copa:
             return "Rare", "Copa Airlines"
-        # Other carriers receive an Uncommon floor; aircraft already classified higher stay higher.
-        if (airline_name or airline_code or airline_icao) and not is_listed_airline and rarity == "Common":
-            return "Uncommon", f"Other airline — {airline.get('name') or airline_code or airline_icao}"
         return rarity, reason
 
     tier_names = ["mythic", "legendary", "epic", "rare", "uncommon", "common"]
@@ -526,7 +514,7 @@ def parse_flight(raw: dict, airport: str, tz: ZoneInfo) -> dict:
         "plane_alert_tags": [],
         "photo": {"url": None, "thumbnail": None, "link": None, "photographer": None},
         "status": raw.get("status") or "Scheduled",
-        "fr24_url": f"https://www.flightradar24.com/{num.replace(' ', '')}",
+        "fr24_url": f"https://www.flightradar24.com/data/flights/{quote(num.replace(' ', '').lower(), safe='')}",
     }
 
 
@@ -681,6 +669,10 @@ def main():
     if not active_airports:
         log.error("No active airports configured.")
         sys.exit(1)
+    prior_airport_counts = {}
+    for prior_flight in load_json(ARRIVALS_JSON, {}).get("flights", []):
+        prior_airport = str(prior_flight.get("airport") or "").upper()
+        prior_airport_counts[prior_airport] = prior_airport_counts.get(prior_airport, 0) + 1
 
     ledger = load_json(USAGE_LEDGER_JSON, {})
     session = requests.Session()
@@ -741,6 +733,9 @@ def main():
             flight = parse_flight(raw, iata, tz)
             if not flight["flight_number"] or flight["id"] in seen_in_batch:
                 continue
+            if not flight["arrival"]["scheduled_utc"] or not flight["arrival"]["scheduled_local"]:
+                log.warning("Skipping %s arrival with no scheduled arrival time", flight["flight_number"])
+                continue
             seen_in_batch.add(flight["id"])
             icao_type = normalize_icao_type(flight["aircraft"]["model"], norm_map) or flight["aircraft"]["model"] or None
             flight["aircraft"]["icao_type"] = icao_type
@@ -758,17 +753,30 @@ def main():
             flight["rarity_reason"] = reason
             flight["rarity_color"] = RARITY_COLORS.get(rarity, "#64748b")
             all_flights.append(flight)
+        log.info("%s: retained %d arrivals with valid scheduled times", iata, sum(f["airport"] == iata for f in all_flights))
         if run_meter.get("incomplete"):
             break
 
-    # If all airport fetches failed, keep prior data intact rather than replacing it with an empty board.
-    if not complete and not all_flights:
-        log.error("All arrival requests failed; preserving existing arrivals.json")
+    current_airport_counts = {airport: 0 for airport in active_airports}
+    for flight in all_flights:
+        current_airport_counts[flight["airport"]] += 1
+    for airport, count in current_airport_counts.items():
+        if count == 0 and prior_airport_counts.get(airport, 0) >= 20:
+            log.error("%s returned no timed arrivals despite %d in the prior snapshot", airport, prior_airport_counts[airport])
+            complete = False
+
+    # An incomplete run must never replace a complete board (for example DCA
+    # succeeding while IAD fails, or an established airport unexpectedly returning 0).
+    if not complete:
+        log.error("Arrival refresh was incomplete; preserving existing arrivals.json")
         sys.exit(1)
 
     rarity_counts = {r: 0 for r in RARITY_ORDER}
     for flight in all_flights:
         rarity_counts[flight["rarity"]] = rarity_counts.get(flight["rarity"], 0) + 1
+    airport_flight_counts = {airport: 0 for airport in active_airports}
+    for flight in all_flights:
+        airport_flight_counts[flight["airport"]] += 1
     photo_eligible = [f for f in all_flights if f["rarity"] != "Common"]
     photo_eligible.sort(key=lambda f: RARITY_ORDER.index(f["rarity"]), reverse=True)
     for flight in photo_eligible[:60]:
@@ -802,7 +810,8 @@ def main():
         "generated": now.isoformat(), "target_date": target_date, "airports": active_airports,
         "window_hours": 24, "excluded_local_hours": "22:00-06:00", "window_start_utc": window_start_utc.isoformat(),
         "window_end_utc": window_end_utc.isoformat(), "airport_timezones": airport_timezones,
-        "total_flights": len(all_flights), "rarity_counts": rarity_counts,
+        "total_flights": len(all_flights), "airport_flight_counts": airport_flight_counts,
+        "rarity_counts": rarity_counts,
         "last_updated_utc": now.isoformat(), "last_updated_local": datetime.now(ZoneInfo("America/New_York")).isoformat(),
         "is_sample_data": False, "source": "FlightAware AeroAPI v4", "fetch_complete": complete,
         "budget": {"month": month, "estimated_cost_usd": max(month_spend, float(ledger_entry.get("estimated_cost_usd", 0))),

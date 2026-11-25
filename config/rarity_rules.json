@@ -22,11 +22,11 @@
         "reason_template": "Rare Visitor at DCA"
       },
       "uncommon": {
-        "icao_types": ["B739", "B39M", "E190", "E195", "E290", "E295", "BCS1", "BCS3", "A220", "A20N"],
+        "icao_types": ["B739", "B39M"],
         "reason_template": "Uncommon Type at DCA"
       },
       "common": {
-        "icao_types": ["CRJ2", "CRJ7", "CRJ9", "CRJX", "E170", "E175", "E75L", "E75S", "A319", "A320", "A321", "B737", "B738", "B38M", "B736", "SF34", "DH8C", "DH8A"],
+        "icao_types": ["CRJ2", "CRJ7", "CRJ9", "CRJX", "E170", "E175", "E75L", "E75S", "E190", "E195", "E290", "E295", "BCS1", "BCS3", "A220", "A20N", "A319", "A320", "A321", "B737", "B738", "B38M", "B736", "SF34", "DH8C", "DH8A"],
         "reason_template": "Standard DCA Traffic"
       }
     },
@@ -51,11 +51,11 @@
         "reason_template": "Less-Common Widebody / Heavy Freighter"
       },
       "uncommon": {
-        "icao_types": ["B772", "B77W", "B788", "B789", "B78X", "A333", "A359", "B752", "B753", "B763", "BCS1", "BCS3", "A220", "A21N"],
+        "icao_types": ["B772", "B77W", "B788", "B789", "B78X", "A333", "A359", "B752", "B753", "B763"],
         "reason_template": "Standard IAD Widebody / Larger Narrowbody"
       },
       "common": {
-        "icao_types": ["CRJ2", "CRJ7", "CRJ9", "CRJX", "E145", "E170", "E175", "E75L", "E75S", "B737", "B738", "B739", "B38M", "B39M", "A319", "A320", "A321", "A20N", "SF34", "DH8D", "DH8C"],
+        "icao_types": ["CRJ2", "CRJ7", "CRJ9", "CRJX", "E145", "E170", "E175", "E75L", "E75S", "B737", "B738", "B739", "B38M", "B39M", "A319", "A320", "A321", "A20N", "BCS1", "BCS3", "A220", "A21N", "SF34", "DH8D", "DH8C"],
         "reason_template": "Standard IAD Domestic / Regional Traffic"
       }
     },
@@ -80,11 +80,11 @@
         "reason_template": "Long-Haul Widebody"
       },
       "uncommon": {
-        "icao_types": ["B772", "B788", "B789", "A332", "A333", "B763", "B752", "B753", "BCS3", "A220"],
+        "icao_types": ["B772", "B788", "B789", "A332", "A333", "B763", "B752", "B753"],
         "reason_template": "Mid-Size Widebody / Larger Narrowbody"
       },
       "common": {
-        "icao_types": ["B737", "B738", "B739", "B38M", "B39M", "A319", "A320", "A321", "A21N", "A20N", "BCS1", "E75L", "E75S", "E170", "E175", "CRJ7", "CRJ9", "CRJX", "AT72", "AT76", "DH8D", "DH8C", "SF34", "E145", "E190", "E195"],
+        "icao_types": ["B737", "B738", "B739", "B38M", "B39M", "A319", "A320", "A321", "A21N", "A20N", "BCS1", "BCS3", "A220", "E75L", "E75S", "E170", "E175", "CRJ7", "CRJ9", "CRJX", "AT72", "AT76", "DH8D", "DH8C", "SF34", "E145", "E190", "E195"],
         "reason_template": "Standard Regional / Narrowbody Traffic"
       }
     }

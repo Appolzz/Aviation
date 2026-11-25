@@ -181,6 +181,7 @@ code, .mono {
   content: '📡';
   font-size: 0.7rem;
 }
+.airport-pill-count { color: var(--text-muted); font: 500 .68rem 'JetBrains Mono', monospace; }
 
 .date-banner {
   flex: 1;
