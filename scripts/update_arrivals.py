@@ -16,6 +16,7 @@ import os
 import re
 import sys
 import time
+from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -44,6 +45,7 @@ RARITY_JSON = CONFIG_DIR / "rarity_rules.json"
 ARRIVALS_JSON = DATA_DIR / "arrivals.json"
 SEEN_JSON = DATA_DIR / "seen_flights.json"
 PHOTO_CACHE_JSON = DATA_DIR / "photo_cache.json"
+USAGE_LEDGER_JSON = DATA_DIR / "api_usage_ledger.json"
 
 # ---------------------------------------------------------------------------
 # External constants
@@ -52,9 +54,13 @@ PLANE_ALERT_DB_URL = (
     "https://raw.githubusercontent.com/sdr-enthusiasts/plane-alert-db/main/"
     "plane-alert-db.csv"
 )
-AERODATABOX_HOST = "aerodatabox.p.rapidapi.com"
-AERODATABOX_BASE = f"https://{AERODATABOX_HOST}/flights/airports/iata"
-API_MARKET_BASE = "https://prod.api.market/api/v1/aedbx/aerodatabox/flights/airports/iata"
+FLIGHTAWARE_BASE = "https://aeroapi.flightaware.com/aeroapi"
+RESULT_SET_COST_USD = 0.005
+HARD_MONTHLY_CAP_USD = 4.25
+MAX_RUN_COST_USD = 0.25
+MAX_PAGES_PER_AIRPORT = 22
+RESULTS_PER_SET = 15
+PAGE_PACING_SECONDS = 7.0
 PLANESPOTTERS_REG = "https://api.planespotters.net/pub/photos/reg/{reg}"
 PLANESPOTTERS_HEX = "https://api.planespotters.net/pub/photos/hex/{hex}"
 NTFY_BASE = "https://ntfy.sh/{topic}"
@@ -120,6 +126,62 @@ def tomorrow_date(tz: ZoneInfo) -> str:
     return (now_local + timedelta(days=1)).strftime("%Y-%m-%d")
 
 
+def airport_icao(iata: str, config: dict) -> str:
+    """Resolve configured IATA codes to FlightAware ICAO identifiers."""
+    mapping = config.get("iata_to_icao", {})
+    code = mapping.get(iata.upper()) or ("K" + iata.upper() if len(iata) == 3 else iata.upper())
+    return code.upper()
+
+
+def account_usage_cost(payload) -> float | None:
+    """Find the current period's reported cost in AeroAPI's usage response."""
+    names = {"total_cost", "total_cost_usd", "cost", "cost_usd", "totalcost"}
+    found = []
+    def walk(value):
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key.lower().replace("-", "_") in names:
+                    try:
+                        found.append(float(str(child).replace("$", "").replace(",", "").strip()))
+                    except (TypeError, ValueError):
+                        walk(child)
+                else:
+                    walk(child)
+        elif isinstance(value, list):
+            for child in value:
+                walk(child)
+    walk(payload)
+    return max(found) if found else None
+
+
+def current_month() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m")
+
+
+def budget_guard(session: requests.Session, headers: dict, ledger: dict) -> tuple[float, str]:
+    """Fail closed unless the free account usage endpoint returns a usable cost."""
+    month = current_month()
+    entry = ledger.get(month, {})
+    ledger_cost = float(entry.get("estimated_cost_usd", 0) or 0)
+    start = datetime.now(timezone.utc).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    params = {"start": start.strftime("%Y-%m-%dT%H:%M:%SZ"), "end": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+    response = session.get(f"{FLIGHTAWARE_BASE}/account/usage", headers=headers, params=params, timeout=30)
+    response.raise_for_status()
+    live_cost = account_usage_cost(response.json())
+    if live_cost is None:
+        raise RuntimeError("Could not parse GET /account/usage cost; refusing paid requests for safety")
+    cost = max(live_cost, ledger_cost)
+    return cost, month
+
+
+def record_usage(ledger: dict, month: str, page_count: int) -> None:
+    entry = ledger.setdefault(month, {"result_sets_used": 0, "estimated_cost_usd": 0.0})
+    entry["result_sets_used"] = int(entry.get("result_sets_used", 0)) + page_count
+    entry["estimated_cost_usd"] = round(float(entry.get("estimated_cost_usd", 0)) + page_count * RESULT_SET_COST_USD, 4)
+    entry["updated_at"] = datetime.now(timezone.utc).isoformat()
+    save_json(USAGE_LEDGER_JSON, ledger)
+
+
 # ---------------------------------------------------------------------------
 # ICAO type normalization
 # ---------------------------------------------------------------------------
@@ -179,10 +241,7 @@ def download_plane_alert_db(session: requests.Session) -> tuple[dict, dict]:
         reg_raw = entry.get("Registration", "").upper()
         reg_norm = re.sub(r"[\s\-]", "", reg_raw)
 
-        tags = [
-            t for t in [entry.get("Tag 1", ""), entry.get("#Tag 2", ""), entry.get("#Tag 3", "")]
-            if t
-        ]
+        tags = [t for t in [entry.get("Tag 1", ""), entry.get("Tag 2", ""), entry.get("Tag 3", "")] if t]
         payload = {
             "operator": entry.get("Operator", ""),
             "icao_type": entry.get("ICAO Type", "") or entry.get("Type", ""),
@@ -266,85 +325,109 @@ def classify_rarity(
 
 
 # ---------------------------------------------------------------------------
-# AeroDataBox fetching
+# FlightAware AeroAPI fetching
 # ---------------------------------------------------------------------------
 
 def fetch_arrivals_for_airport(
     session: requests.Session,
     iata: str,
+    icao: str,
     target_date: str,
-    api_base: str,
     headers: dict,
+    tz: ZoneInfo,
+    ledger: dict,
+    month: str,
+    month_spend: float,
+    run_meter: dict,
+    force_budget_override: bool = False,
 ) -> list[dict]:
-    """Fetch 24h arrivals for one airport in two 12-hour windows."""
+    """Fetch tomorrow's 05:15–23:59 local arrivals one result set per request."""
+    start_local = datetime.fromisoformat(f"{target_date}T05:15:00").replace(tzinfo=tz)
+    end_local = datetime.fromisoformat(f"{target_date}T23:59:59").replace(tzinfo=tz)
     params = {
-        "withLeg": "true",
-        "direction": "Arrival",
-        "withCancelled": "false",
-        "withCodeshared": "false",
-        "withCargo": "true",
-        "withPrivate": "true",
+        "start": start_local.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "end": end_local.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        # One page per call keeps the 10-result-set/minute limit enforceable.
+        # The cumulative airport cap below is 22 pages (330 flights).
+        "max_pages": 1,
     }
+    url = f"{FLIGHTAWARE_BASE}/airports/{icao}/flights/scheduled_arrivals"
+    next_url = None
+    next_params = params
+    arrivals = []
+    airport_pages = 0
+    while airport_pages < MAX_PAGES_PER_AIRPORT:
+        ledger_month_cost = float((ledger.get(month, {}) or {}).get("estimated_cost_usd", 0) or 0)
+        accounted_month_spend = max(month_spend, ledger_month_cost)
+        if accounted_month_spend + RESULT_SET_COST_USD > HARD_MONTHLY_CAP_USD:
+            log.warning("Monthly safety cap ($4.25) reached — skipping API fetch to guarantee $0 billing")
+            run_meter["incomplete"] = True
+            break
+        if not force_budget_override and run_meter["cost"] + RESULT_SET_COST_USD > MAX_RUN_COST_USD:
+            log.warning("Run safety cap ($0.25) reached — stopping additional API pages")
+            run_meter["incomplete"] = True
+            break
+        last_request = run_meter.get("last_request_at")
+        if last_request is not None:
+            time.sleep(max(0.0, PAGE_PACING_SECONDS - (time.monotonic() - last_request)))
+        request_started = time.monotonic()
+        response = session.get(next_url or url, headers=headers, params=next_params if next_url is None else None, timeout=30)
+        run_meter["last_request_at"] = request_started
+        if response.status_code == 429:
+            log.warning("FlightAware rate limit response; stopping this airport without retry")
+            run_meter["incomplete"] = True
+            break
+        response.raise_for_status()
+        payload = response.json()
+        items = payload.get("scheduled_arrivals", [])
+        arrivals.extend(items)
 
-    windows = [("00:00", "11:59"), ("12:00", "23:59")]
-    all_arrivals = []
+        # AeroAPI returns num_pages for the result sets actually delivered.
+        pages = max(1, int(payload.get("num_pages", 1) or 1))
+        airport_pages += pages
+        run_meter["cost"] += pages * RESULT_SET_COST_USD
+        record_usage(ledger, month, pages)
+        month_spend += pages * RESULT_SET_COST_USD
+        log.info("%s page %d/%d: %d arrivals", iata, airport_pages, MAX_PAGES_PER_AIRPORT, len(items))
 
-    for start_t, end_t in windows:
-        url = f"{api_base}/{iata}/{target_date}T{start_t}/{target_date}T{end_t}"
-        log.info("Fetching %s %s–%s …", iata, start_t, end_t)
-        try:
-            resp = session.get(url, headers=headers, params=params, timeout=30)
-            if resp.status_code == 404:
-                log.warning("No data for %s %s–%s (404)", iata, start_t, end_t)
-                continue
-            if resp.status_code == 429:
-                log.warning("Rate limited — waiting 60s before retry")
-                time.sleep(60)
-                resp = session.get(url, headers=headers, params=params, timeout=30)
-            resp.raise_for_status()
-            data = resp.json()
-            arrivals = data.get("arrivals", [])
-            log.info("  Got %d arrivals", len(arrivals))
-            all_arrivals.extend(arrivals)
-        except requests.RequestException as exc:
-            log.error("Error fetching %s %s–%s: %s", iata, start_t, end_t, exc)
+        next_ref = (payload.get("links") or {}).get("next")
+        if not next_ref:
+            break
+        next_url = urljoin(url, next_ref)
+        parts = urlsplit(next_url)
+        query = dict(parse_qsl(parts.query, keep_blank_values=True))
+        query["max_pages"] = "1"
+        next_url = urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 
-        # Polite delay between calls
-        time.sleep(1)
-
-    return all_arrivals
+    if airport_pages >= MAX_PAGES_PER_AIRPORT and next_url:
+        run_meter["incomplete"] = True
+    return arrivals
 
 
-def parse_flight(raw: dict, airport: str) -> dict:
-    """Extract normalized flight fields from an AeroDataBox arrival item."""
-    num = (raw.get("number") or "").strip()
-    status = raw.get("status", "Scheduled")
+def local_iso(value: str | None, tz: ZoneInfo) -> str | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(tz).isoformat()
+    except ValueError:
+        return value
 
-    airline = raw.get("airline") or {}
-    airline_name = airline.get("name", "")
-    airline_iata = airline.get("iata", "")
-    airline_icao = airline.get("icao", "")
 
-    dep = raw.get("departure") or {}
-    dep_ap = dep.get("airport") or {}
-    origin_iata = dep_ap.get("iata", "")
-    origin_icao = dep_ap.get("icao", "")
-    origin_name = dep_ap.get("name", "")
-
-    arr = raw.get("arrival") or {}
-    arr_times = arr.get("revisedTime") or arr.get("scheduledTime") or {}
-    arr_local = arr_times.get("local")
-    arr_utc = arr_times.get("utc")
-    arr_sched = (arr.get("scheduledTime") or {}).get("local")
-    terminal = arr.get("terminal")
-    gate = arr.get("gate")
-
-    aircraft = raw.get("aircraft") or {}
-    reg = (aircraft.get("reg") or "").strip().upper() or None
-    modes = (aircraft.get("modeS") or "").strip().upper() or None
-    model = (aircraft.get("model") or "").strip()
-
-    # Build dedup key
+def parse_flight(raw: dict, airport: str, tz: ZoneInfo) -> dict:
+    """Extract normalized fields from a FlightAware AeroAPI scheduled arrival."""
+    num = (raw.get("ident_iata") or raw.get("ident") or "").strip()
+    operator = raw.get("operator") or ""
+    origin = raw.get("origin") or {}
+    arr_utc = raw.get("estimated_in") or raw.get("scheduled_in")
+    scheduled_utc = raw.get("scheduled_in")
+    arr_local = local_iso(arr_utc, tz)
+    sched_local = local_iso(scheduled_utc, tz)
+    reg = (raw.get("registration") or "").strip().upper() or None
+    modes = (raw.get("hex") or raw.get("mode_s") or "").strip().upper() or None
+    model = (raw.get("aircraft_type") or "").strip().upper()
     target_date = (arr_local or arr_utc or "")[:10]
     reg_part = re.sub(r"[\s\-]", "", reg) if reg else "NOREG"
     flight_id = f"{target_date}_{airport.upper()}_{num}_{reg_part}"
@@ -354,27 +437,28 @@ def parse_flight(raw: dict, airport: str) -> dict:
         "airport": airport.upper(),
         "flight_number": num,
         "airline": {
-            "name": airline_name,
-            "iata": airline_iata,
-            "icao": airline_icao,
+            "name": operator,
+            "iata": raw.get("operator_iata") or "",
+            "icao": raw.get("operator_icao") or "",
         },
         "origin": {
-            "iata": origin_iata,
-            "icao": origin_icao,
-            "name": origin_name,
+            "iata": origin.get("code_iata") or origin.get("code_icao") or "",
+            "icao": origin.get("code_icao") or "",
+            "name": origin.get("name") or "",
+            "city": origin.get("city") or "",
         },
         "arrival": {
-            "scheduled_local": arr_sched,
-            "scheduled_utc": arr_utc,
-            "revised_local": arr_local if arr_local != arr_sched else None,
-            "terminal": terminal,
-            "gate": gate,
+            "scheduled_local": sched_local,
+            "scheduled_utc": scheduled_utc,
+            "revised_local": arr_local if arr_local != sched_local else None,
+            "terminal": raw.get("terminal_destination"),
+            "gate": raw.get("gate_destination"),
         },
         "aircraft": {
             "reg": reg,
             "modeS": modes,
             "model": model,
-            "icao_type": None,  # filled later
+            "icao_type": model or None,
         },
         "rarity": "Common",
         "rarity_reason": "",
@@ -384,7 +468,7 @@ def parse_flight(raw: dict, airport: str) -> dict:
         "plane_alert_category": None,
         "plane_alert_tags": [],
         "photo": {"url": None, "thumbnail": None, "link": None, "photographer": None},
-        "status": status,
+        "status": raw.get("status") or "Scheduled",
         "fr24_url": f"https://www.flightradar24.com/{num.replace(' ', '')}",
     }
 
@@ -456,21 +540,22 @@ def send_ntfy(
 
     rarity = flight["rarity"]
     airline_name = flight["airline"]["name"] or "Unknown Airline"
+    operator_iata = flight["airline"].get("iata") or airline_name
     fn = flight["flight_number"]
     airport = flight["airport"]
     icao_type = flight["aircraft"]["icao_type"] or flight["aircraft"]["model"] or "?"
     reg = flight["aircraft"]["reg"] or "Reg TBD"
     rarity_reason = flight["rarity_reason"] or rarity
     origin_iata = flight["origin"]["iata"] or "?"
-    origin_name = flight["origin"]["name"] or origin_iata
+    origin_city = flight["origin"].get("city") or flight["origin"]["name"] or origin_iata
 
     arr_local = flight["arrival"]["revised_local"] or flight["arrival"]["scheduled_local"] or "?"
     arr_time_str = arr_local[11:16] if len(arr_local) > 10 else arr_local
 
-    title = f"[{rarity.upper()}] {airline_name} {fn} → {airport} ({icao_type})"
+    title = f"[{rarity.upper()}] {operator_iata} {fn} -> {airport} ({icao_type})"
     body = (
         f"{icao_type} ({reg}) • {rarity_reason} • "
-        f"From: {origin_iata} ({origin_name}) • "
+        f"From: {origin_iata} ({origin_city}) • "
         f"Arriving Tomorrow at {arr_time_str}"
     )
 
@@ -526,179 +611,123 @@ def prune_seen(seen: dict, days: int = 7) -> dict:
 # ---------------------------------------------------------------------------
 
 def main():
-    # --- Read secrets from environment ---
-    rapidapi_key = os.environ.get("AERODATABOX_API_KEY", "").strip()
-    api_market_key = os.environ.get("AERODATABOX_API_MARKET_KEY", "").strip()
+    api_key = os.environ.get("FLIGHTAWARE_API_KEY", "").strip()
     ntfy_topic = os.environ.get("NTFY_TOPIC", "").strip()
-
-    if api_market_key:
-        api_base = API_MARKET_BASE
-        api_headers = {"x-api-market-key": api_market_key}
-        api_provider = "API.Market"
-    elif rapidapi_key:
-        api_base = AERODATABOX_BASE
-        api_headers = {
-            "x-rapidapi-key": rapidapi_key,
-            "x-rapidapi-host": AERODATABOX_HOST,
-        }
-        api_provider = "RapidAPI"
-    else:
-        log.error("No AeroDataBox credential found. Add AERODATABOX_API_MARKET_KEY or AERODATABOX_API_KEY as a GitHub Actions secret.")
+    if not api_key:
+        log.error("Missing FLIGHTAWARE_API_KEY GitHub Actions secret.")
         sys.exit(1)
 
-    log.info("Using AeroDataBox via %s", api_provider)
-
-    # --- Load config ---
     airports_config = load_json(AIRPORTS_JSON, {"active": ["DCA", "IAD"], "timezone_overrides": {}, "presets": []})
     rarity_config = load_json(RARITY_JSON, {"profiles": {}, "icao_type_normalization": {"keywords": []}})
-
-    active_airports = airports_config.get("active", [])[:3]  # max 3 to protect free tier
+    active_airports = [str(a).upper() for a in airports_config.get("active", ["DCA", "IAD"])[:3]]
+    force_budget_override = bool(airports_config.get("force_budget_override", False))
     tz_overrides = airports_config.get("timezone_overrides", {})
-
     if not active_airports:
-        log.error("No active airports configured. Check config/airports.json.")
+        log.error("No active airports configured.")
         sys.exit(1)
 
-    log.info("Active airports: %s", active_airports)
-
-    # --- Load persistent data ---
-    seen_flights = load_json(SEEN_JSON, {"_comment": "auto-generated"})
-    photo_cache = load_json(PHOTO_CACHE_JSON, {"_comment": "auto-generated"})
-
-    # --- Build normalization map ---
-    norm_map = build_normalization_map(rarity_config)
-
-    # --- Create HTTP session ---
+    ledger = load_json(USAGE_LEDGER_JSON, {})
     session = requests.Session()
-    session.headers.update({"User-Agent": "LootRadar/1.0 (github.com/lootrada)"})
+    session.headers.update({"User-Agent": "LootRadar/1.0", "x-apikey": api_key, "Accept": "application/json"})
 
-    # --- Download plane-alert-db ---
+    # This no-cost usage read is first; fail closed if it errors or cannot be parsed.
+    try:
+        month_spend, month = budget_guard(session, {"x-apikey": api_key, "Accept": "application/json"}, ledger)
+    except Exception as exc:
+        log.error("Usage preflight failed; refusing paid API calls: %s", exc)
+        sys.exit(1)
+    if month_spend >= HARD_MONTHLY_CAP_USD:
+        log.warning("Monthly safety cap ($4.25) reached — skipping API fetch to guarantee $0 billing")
+        sys.exit(0)
+
+    seen_flights = load_json(SEEN_JSON, {})
+    photo_cache = load_json(PHOTO_CACHE_JSON, {})
+    norm_map = build_normalization_map(rarity_config)
     reg_lookup, hex_lookup = download_plane_alert_db(session)
-
-    # --- Fetch arrivals for each airport ---
-    all_flights: list[dict] = []
-    rarity_counts = {r: 0 for r in RARITY_ORDER}
-
+    all_flights = []
+    run_meter = {"cost": 0.0}
+    complete = True
     for iata in active_airports:
         tz = get_timezone(iata, tz_overrides)
         target_date = tomorrow_date(tz)
-        log.info("Fetching arrivals for %s on %s (tz: %s)", iata, target_date, tz.key)
+        icao = airport_icao(iata, airports_config)
+        log.info("Fetching %s (%s) arrivals for %s", iata, icao, target_date)
+        try:
+            raw_arrivals = fetch_arrivals_for_airport(session, iata, icao, target_date,
+                {"x-apikey": api_key, "Accept": "application/json"}, tz, ledger, month, month_spend, run_meter, force_budget_override)
+        except requests.RequestException as exc:
+            log.error("FlightAware request failed for %s: %s", iata, exc)
+            complete = False
+            break
+        if run_meter.get("incomplete"):
+            complete = False
+            log.warning("Budget or result-set safety limit stopped later airport requests")
 
-        raw_arrivals = fetch_arrivals_for_airport(session, iata, target_date, api_base, api_headers)
-
-        # Deduplicate by flight number within this airport
-        seen_in_batch: set = set()
-
+        seen_in_batch = set()
         for raw in raw_arrivals:
-            flight = parse_flight(raw, iata)
-            fn = flight["flight_number"]
-
-            if fn in seen_in_batch:
+            flight = parse_flight(raw, iata, tz)
+            if not flight["flight_number"] or flight["id"] in seen_in_batch:
                 continue
-            seen_in_batch.add(fn)
-
-            # Normalize ICAO type
-            raw_model = flight["aircraft"]["model"]
-            icao_type = normalize_icao_type(raw_model, norm_map)
+            seen_in_batch.add(flight["id"])
+            icao_type = normalize_icao_type(flight["aircraft"]["model"], norm_map) or flight["aircraft"]["model"] or None
             flight["aircraft"]["icao_type"] = icao_type
-
-            # plane-alert-db enrichment
-            reg = flight["aircraft"]["reg"]
-            modes = flight["aircraft"]["modeS"]
-            pa_entry = lookup_plane_alert(reg, modes, reg_lookup, hex_lookup)
-
+            pa_entry = lookup_plane_alert(flight["aircraft"]["reg"], flight["aircraft"]["modeS"], reg_lookup, hex_lookup)
             if pa_entry:
                 flight["plane_alert_match"] = True
                 flight["plane_alert_category"] = pa_entry.get("category")
                 flight["plane_alert_tags"] = pa_entry.get("tags", [])
-                operator = pa_entry.get("operator", "")
-                tags_str = ", ".join(t for t in pa_entry.get("tags", []) if t)
-                flight["livery_or_note"] = tags_str or operator or None
-                # Override icao_type with plane-alert-db if we didn't get one
+                flight["livery_or_note"] = ", ".join(pa_entry.get("tags", [])) or pa_entry.get("operator") or None
                 if not icao_type and pa_entry.get("icao_type"):
                     flight["aircraft"]["icao_type"] = pa_entry["icao_type"]
                     icao_type = pa_entry["icao_type"]
-
-            # Assign rarity
             rarity, reason = classify_rarity(icao_type, pa_entry, iata, rarity_config)
             flight["rarity"] = rarity
             flight["rarity_reason"] = reason
             flight["rarity_color"] = RARITY_COLORS.get(rarity, "#64748b")
-            rarity_counts[rarity] = rarity_counts.get(rarity, 0) + 1
-
             all_flights.append(flight)
+        if run_meter.get("incomplete"):
+            break
 
-    # --- Photo enrichment for Uncommon+ (cap at 60 to be polite) ---
-    notify_flights = [f for f in all_flights if f["rarity"] in NOTIFY_RARITIES]
+    # If all airport fetches failed, keep prior data intact rather than replacing it with an empty board.
+    if not complete and not all_flights:
+        log.error("All arrival requests failed; preserving existing arrivals.json")
+        sys.exit(1)
+
+    rarity_counts = {r: 0 for r in RARITY_ORDER}
+    for flight in all_flights:
+        rarity_counts[flight["rarity"]] = rarity_counts.get(flight["rarity"], 0) + 1
     photo_eligible = [f for f in all_flights if f["rarity"] != "Common"]
-    photo_eligible.sort(key=lambda f: RARITY_ORDER.index(f["rarity"]) if f["rarity"] in RARITY_ORDER else 0, reverse=True)
-    photo_eligible = photo_eligible[:60]
+    photo_eligible.sort(key=lambda f: RARITY_ORDER.index(f["rarity"]), reverse=True)
+    for flight in photo_eligible[:60]:
+        flight["photo"] = fetch_photo(session, flight["aircraft"]["reg"], flight["aircraft"]["modeS"], photo_cache)
+        time.sleep(0.2)
 
-    log.info("Fetching photos for %d flights …", len(photo_eligible))
-    for flight in photo_eligible:
-        reg = flight["aircraft"]["reg"]
-        modes = flight["aircraft"]["modeS"]
-        photo = fetch_photo(session, reg, modes, photo_cache)
-        flight["photo"] = photo
-        time.sleep(0.2)  # polite delay
-
-    # --- Push notifications for new Rare+ flights ---
     seen_flights = prune_seen(seen_flights)
-
     if ntfy_topic:
-        for flight in notify_flights:
-            fid = flight["id"]
-            if fid not in seen_flights:
-                sent = send_ntfy(session, ntfy_topic, flight)
-                if sent:
-                    seen_flights[fid] = datetime.now(timezone.utc).isoformat()
+        for flight in [f for f in all_flights if f["rarity"] in NOTIFY_RARITIES]:
+            if flight["id"] not in seen_flights and send_ntfy(session, ntfy_topic, flight):
+                seen_flights[flight["id"]] = datetime.now(timezone.utc).isoformat()
                 time.sleep(0.5)
-    else:
-        log.info("NTFY_TOPIC not set — skipping notifications")
 
-    # --- Sort flights: rarity desc, then arrival time asc ---
-    def sort_key(f):
-        r_idx = RARITY_ORDER.index(f["rarity"]) if f["rarity"] in RARITY_ORDER else 0
-        arr = f["arrival"]["revised_local"] or f["arrival"]["scheduled_local"] or "9999"
-        return (-r_idx, arr)
-
-    all_flights.sort(key=sort_key)
-
-    # --- Build metadata ---
-    now_utc = datetime.now(timezone.utc)
-    # Pick last target date seen (or tomorrow in UTC)
-    target_dates = set()
-    for f in all_flights:
-        d = (f["arrival"]["scheduled_local"] or f["arrival"]["scheduled_utc"] or "")[:10]
-        if d:
-            target_dates.add(d)
-    target_date_str = max(target_dates) if target_dates else (now_utc + timedelta(days=1)).strftime("%Y-%m-%d")
-
-    output = {
-        "_meta": {
-            "generated": now_utc.isoformat(),
-            "target_date": target_date_str,
-            "airports": active_airports,
-            "total_flights": len(all_flights),
-            "rarity_counts": rarity_counts,
-            "last_updated_utc": now_utc.isoformat(),
-            "last_updated_local": datetime.now(ZoneInfo("America/New_York")).isoformat(),
-            "is_sample_data": False,
-        },
-        "flights": all_flights,
-    }
-
-    # --- Save outputs ---
+    all_flights.sort(key=lambda f: (-RARITY_ORDER.index(f["rarity"]), f["arrival"]["revised_local"] or f["arrival"]["scheduled_local"] or "9999"))
+    now = datetime.now(timezone.utc)
+    target_date = max([((f["arrival"]["scheduled_local"] or "")[:10]) for f in all_flights] or [(now + timedelta(days=1)).strftime("%Y-%m-%d")])
+    ledger_entry = ledger.get(month, {})
+    output = {"_meta": {
+        "generated": now.isoformat(), "target_date": target_date, "airports": active_airports,
+        "total_flights": len(all_flights), "rarity_counts": rarity_counts,
+        "last_updated_utc": now.isoformat(), "last_updated_local": datetime.now(ZoneInfo("America/New_York")).isoformat(),
+        "is_sample_data": False, "source": "FlightAware AeroAPI v4", "fetch_complete": complete,
+        "budget": {"month": month, "estimated_cost_usd": max(month_spend, float(ledger_entry.get("estimated_cost_usd", 0))),
+            "monthly_cap_usd": HARD_MONTHLY_CAP_USD, "free_credit_usd": 5.00,
+            "result_sets_used": int(ledger_entry.get("result_sets_used", 0)), "rate": "estimate; FlightAware usage can lag",
+            "force_budget_override": force_budget_override}
+    }, "flights": all_flights}
     save_json(ARRIVALS_JSON, output)
-    log.info("Wrote %d flights to %s", len(all_flights), ARRIVALS_JSON)
-
     save_json(SEEN_JSON, seen_flights)
-    log.info("Saved seen_flights (%d entries)", len([k for k in seen_flights if not k.startswith("_")]))
-
     save_json(PHOTO_CACHE_JSON, photo_cache)
-    log.info("Saved photo_cache (%d entries)", len([k for k in photo_cache if not k.startswith("_")]))
-
-    log.info("Done! Rarity breakdown: %s", rarity_counts)
+    save_json(USAGE_LEDGER_JSON, ledger)
+    log.info("Saved %d flights; budget estimate is $%.4f / $%.2f", len(all_flights), output["_meta"]["budget"]["estimated_cost_usd"], HARD_MONTHLY_CAP_USD)
 
 
 if __name__ == "__main__":

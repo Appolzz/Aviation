@@ -1,23 +1,52 @@
 {
   "_meta": {
-    "generated": "2026-11-25T04:21:08.522633+00:00",
+    "generated": "2026-11-25T12:00:00+00:00",
     "target_date": "2026-11-26",
-    "airports": [
-      "DCA",
-      "IAD"
-    ],
-    "total_flights": 0,
-    "rarity_counts": {
-      "Common": 0,
-      "Uncommon": 0,
-      "Rare": 0,
-      "Epic": 0,
-      "Legendary": 0,
-      "Mythic": 0
-    },
-    "last_updated_utc": "2026-11-25T04:21:08.522633+00:00",
-    "last_updated_local": "2026-11-24T23:21:08.522689-05:00",
-    "is_sample_data": false
+    "airports": ["DCA", "IAD"],
+    "total_flights": 5,
+    "rarity_counts": {"Common": 1, "Uncommon": 0, "Rare": 1, "Epic": 1, "Legendary": 1, "Mythic": 1},
+    "last_updated_utc": "2026-11-25T12:00:00+00:00",
+    "last_updated_local": "2026-11-25T07:00:00-05:00",
+    "is_sample_data": true,
+    "source": "Sample data — replace on first successful workflow run",
+    "fetch_complete": false,
+    "budget": {"month": "2026-11", "estimated_cost_usd": 0, "monthly_cap_usd": 4.25, "free_credit_usd": 5.0, "result_sets_used": 0, "rate": "sample estimate"}
   },
-  "flights": []
+  "flights": [
+    {
+      "id": "2026-11-26_DCA_C37_99-0402", "airport": "DCA", "flight_number": "C37", "airline": {"name": "United States Air Force", "iata": "RCH", "icao": "RCH"},
+      "origin": {"iata": "ADW", "icao": "KADW", "name": "Joint Base Andrews", "city": "Camp Springs"},
+      "arrival": {"scheduled_local": "2026-11-26T09:10:00-05:00", "scheduled_utc": "2026-11-26T14:10:00Z", "revised_local": null, "terminal": null, "gate": null},
+      "aircraft": {"reg": "99-0402", "modeS": null, "model": "C37", "icao_type": "C37"}, "rarity": "Mythic", "rarity_reason": "Military / Government Aircraft", "rarity_color": "#ef4444", "livery_or_note": null,
+      "plane_alert_match": false, "plane_alert_category": null, "plane_alert_tags": [], "photo": {"url": null, "thumbnail": null, "link": null, "photographer": null}, "status": "Scheduled", "fr24_url": "https://www.flightradar24.com/C37"
+    },
+    {
+      "id": "2026-11-26_IAD_LH419_D-ABYA", "airport": "IAD", "flight_number": "LH419", "airline": {"name": "Lufthansa", "iata": "LH", "icao": "DLH"},
+      "origin": {"iata": "FRA", "icao": "EDDF", "name": "Frankfurt Airport", "city": "Frankfurt"},
+      "arrival": {"scheduled_local": "2026-11-26T15:25:00-05:00", "scheduled_utc": "2026-11-26T20:25:00Z", "revised_local": null, "terminal": "B", "gate": "40"},
+      "aircraft": {"reg": "D-ABYA", "modeS": null, "model": "B748", "icao_type": "B748"}, "rarity": "Legendary", "rarity_reason": "Quad-Jet / Ultra-Rare Heavy", "rarity_color": "#f59e0b", "livery_or_note": null,
+      "plane_alert_match": false, "plane_alert_category": null, "plane_alert_tags": [], "photo": {"url": null, "thumbnail": null, "link": null, "photographer": null}, "status": "Scheduled", "fr24_url": "https://www.flightradar24.com/LH419"
+    },
+    {
+      "id": "2026-11-26_DCA_AA1234_N921NN", "airport": "DCA", "flight_number": "AA1234", "airline": {"name": "American Airlines", "iata": "AA", "icao": "AAL"},
+      "origin": {"iata": "DFW", "icao": "KDFW", "name": "Dallas Fort Worth International", "city": "Dallas"},
+      "arrival": {"scheduled_local": "2026-11-26T13:05:00-05:00", "scheduled_utc": "2026-11-26T18:05:00Z", "revised_local": null, "terminal": "C", "gate": "24"},
+      "aircraft": {"reg": "N921NN", "modeS": null, "model": "A321", "icao_type": "A321"}, "rarity": "Epic", "rarity_reason": "Special / Heritage Livery — Flagship Freedom", "rarity_color": "#a855f7", "livery_or_note": "Flagship Freedom",
+      "plane_alert_match": true, "plane_alert_category": "Special Livery", "plane_alert_tags": ["Flagship Freedom"], "photo": {"url": null, "thumbnail": null, "link": null, "photographer": null}, "status": "Scheduled", "fr24_url": "https://www.flightradar24.com/AA1234"
+    },
+    {
+      "id": "2026-11-26_DCA_WN752_N560WN", "airport": "DCA", "flight_number": "WN752", "airline": {"name": "Southwest Airlines", "iata": "WN", "icao": "SWA"},
+      "origin": {"iata": "DAL", "icao": "KDAL", "name": "Dallas Love Field", "city": "Dallas"},
+      "arrival": {"scheduled_local": "2026-11-26T18:40:00-05:00", "scheduled_utc": "2026-11-26T23:40:00Z", "revised_local": null, "terminal": "A", "gate": "15"},
+      "aircraft": {"reg": "N560WN", "modeS": null, "model": "B752", "icao_type": "B752"}, "rarity": "Rare", "rarity_reason": "Rare Visitor at DCA", "rarity_color": "#3b82f6", "livery_or_note": null,
+      "plane_alert_match": false, "plane_alert_category": null, "plane_alert_tags": [], "photo": {"url": null, "thumbnail": null, "link": null, "photographer": null}, "status": "Scheduled", "fr24_url": "https://www.flightradar24.com/WN752"
+    },
+    {
+      "id": "2026-11-26_IAD_UA456_N76521", "airport": "IAD", "flight_number": "UA456", "airline": {"name": "United Airlines", "iata": "UA", "icao": "UAL"},
+      "origin": {"iata": "ORD", "icao": "KORD", "name": "Chicago O'Hare International", "city": "Chicago"},
+      "arrival": {"scheduled_local": "2026-11-26T20:15:00-05:00", "scheduled_utc": "2026-11-27T01:15:00Z", "revised_local": null, "terminal": "C", "gate": "17"},
+      "aircraft": {"reg": "N76521", "modeS": null, "model": "B738", "icao_type": "B738"}, "rarity": "Common", "rarity_reason": "Standard IAD Domestic / Regional Traffic", "rarity_color": "#64748b", "livery_or_note": null,
+      "plane_alert_match": false, "plane_alert_category": null, "plane_alert_tags": [], "photo": {"url": null, "thumbnail": null, "link": null, "photographer": null}, "status": "Scheduled", "fr24_url": "https://www.flightradar24.com/UA456"
+    }
+  ]
 }

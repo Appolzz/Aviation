@@ -295,6 +295,22 @@ function renderLastUpdated(meta) {
   el.innerHTML = `<span class="update-dot"></span>Updated ${ts}`;
 }
 
+function renderBudget(meta) {
+  const el = document.getElementById('budget-pill');
+  const budget = meta.budget;
+  if (!budget) {
+    el.textContent = 'API credit: unavailable';
+    el.classList.add('budget-unknown');
+    return;
+  }
+  const used = Number(budget.estimated_cost_usd || 0);
+  const free = Number(budget.free_credit_usd || 5);
+  const cap = Number(budget.monthly_cap_usd || 4.25);
+  el.textContent = `API credit: $${used.toFixed(2)} / $${free.toFixed(2)} · stop at $${cap.toFixed(2)}`;
+  el.title = 'Estimate only: the local ledger is combined with FlightAware usage data, which may be delayed.';
+  el.classList.toggle('budget-near-cap', used >= cap * 0.8);
+}
+
 function renderAirportFilterTabs(airports) {
   const container = document.getElementById('airport-filter-group');
   const tabs = [{ label: 'All Airports', value: 'all' }, ...airports.map(a => ({ label: a, value: a }))];
@@ -666,6 +682,7 @@ async function loadData() {
     renderAirportPills(state.airports);
     renderDateBanner(state.meta);
     renderLastUpdated(state.meta);
+    renderBudget(state.meta);
 
     // Modal
     renderModal(state.airports, state.presets);

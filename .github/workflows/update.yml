@@ -15,6 +15,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: lootrada-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -37,8 +41,7 @@ jobs:
 
       - name: Run LootRadar update pipeline
         env:
-          AERODATABOX_API_KEY: ${{ secrets.AERODATABOX_API_KEY }}
-          AERODATABOX_API_MARKET_KEY: ${{ secrets.AERODATABOX_API_MARKET_KEY }}
+          FLIGHTAWARE_API_KEY: ${{ secrets.FLIGHTAWARE_API_KEY }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: python scripts/update_arrivals.py
 
@@ -46,7 +49,7 @@ jobs:
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/arrivals.json data/seen_flights.json data/photo_cache.json
+          git add data/arrivals.json data/seen_flights.json data/photo_cache.json data/api_usage_ledger.json
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else

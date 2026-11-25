@@ -47,11 +47,11 @@
         "reason_template": "Special / Alliance / Heritage Livery"
       },
       "rare": {
-        "icao_types": ["B764", "A332", "A339", "A35K", "B77L", "A306", "B742", "B763", "AT72", "AT76"],
+        "icao_types": ["B764", "A332", "A339", "A35K", "B77L", "A306", "B742", "AT72", "AT76"],
         "reason_template": "Less-Common Widebody / Heavy Freighter"
       },
       "uncommon": {
-        "icao_types": ["B772", "B77W", "B788", "B789", "B78X", "A333", "A359", "B752", "B753", "BCS1", "BCS3", "A220", "A21N"],
+        "icao_types": ["B772", "B77W", "B788", "B789", "B78X", "A333", "A359", "B752", "B753", "B763", "BCS1", "BCS3", "A220", "A21N"],
         "reason_template": "Standard IAD Widebody / Larger Narrowbody"
       },
       "common": {

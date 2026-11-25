@@ -1,6 +1,14 @@
 {
   "_comment": "Edit 'active' to swap airports for a vacation (max 3). Trigger the GitHub Action manually after saving.",
   "active": ["DCA", "IAD"],
+  "force_budget_override": false,
+  "iata_to_icao": {
+    "DCA": "KDCA", "IAD": "KIAD", "JFK": "KJFK", "LAX": "KLAX",
+    "HND": "RJTT", "NRT": "RJAA", "LHR": "EGLL", "LGW": "EGKK",
+    "CDG": "LFPG", "FRA": "EDDF", "EWR": "KEWR", "LGA": "KLGA",
+    "BUR": "KBUR", "SFO": "KSFO", "OAK": "KOAK", "ORD": "KORD",
+    "MDW": "KMDW", "DXB": "OMDB", "SIN": "WSSS", "HKG": "VHHH"
+  },
   "timezone_overrides": {
     "DCA": "America/New_York",
     "IAD": "America/New_York",
