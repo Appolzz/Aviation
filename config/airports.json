@@ -1,7 +1,6 @@
 {
   "_comment": "Edit 'active' to swap airports for a vacation (max 3). Trigger the GitHub Action manually after saving.",
   "active": ["DCA", "IAD"],
-  "force_budget_override": false,
   "iata_to_icao": {
     "DCA": "KDCA", "IAD": "KIAD", "JFK": "KJFK", "LAX": "KLAX",
     "HND": "RJTT", "NRT": "RJAA", "LHR": "EGLL", "LGW": "EGKK",

@@ -1,14 +1,14 @@
-# LootRadar — Next-Day Rare Flight & Livery Tracker
+# LootRadar — 24-Hour Rare Flight & Livery Tracker
 
-LootRadar is a static GitHub Pages dashboard backed by a nightly GitHub Actions pipeline. It loads tomorrow's scheduled arrivals for DCA and IAD from FlightAware AeroAPI v4, assigns airport-specific rarity, enriches aircraft with public livery/photo data, and can send rare-flight alerts through ntfy.sh.
+LootRadar is a static GitHub Pages dashboard backed by a daily GitHub Actions pipeline. It loads all available scheduled arrivals in the next rolling 24 hours for DCA and IAD from FlightAware AeroAPI v4, assigns airport-specific rarity, enriches aircraft with public livery/photo data, and can send rare-flight alerts through ntfy.sh. Flights are listed by arrival time; rarity buttons filter the list without changing that order.
 
 ## Cost and budget protections
 
-FlightAware lists `GET /airports/{id}/flights/scheduled_arrivals` at **$0.005 per result set** (up to 15 records). The Personal plan currently includes up to $5/month in free API credit. The pipeline stops at an internal $4.25 monthly ceiling and $0.25 per run, leaving a buffer. It checks account-wide usage from the no-cost `/account/usage` endpoint before any arrival query and tracks local usage in `data/api_usage_ledger.json`.
+FlightAware lists `GET /airports/{id}/flights/scheduled_arrivals` at **$0.005 per result set** (up to 15 records). The Personal plan currently includes up to $5/month in free API credit. The pipeline stops at an internal $4.25 monthly ceiling. It checks account-wide usage from the no-cost `/account/usage` endpoint before any arrival query and tracks local usage in `data/api_usage_ledger.json`.
 
-This is a conservative automatic stop, not an account-level billing lock. FlightAware says usage reporting can lag around 10 minutes; other applications using the same AeroAPI account can consume the same credit. Keep the API key private and review usage in the FlightAware portal. `force_budget_override` defaults to `false`; setting it to `true` bypasses the $0.25 per-run limit, but the $4.25 monthly ceiling still applies.
+This is a software safety stop, not an account-level billing lock. FlightAware says usage reporting can lag around 10 minutes; other applications using the same AeroAPI account can consume the same credit. Keep the API key private and review usage in the FlightAware portal. The local ledger helps account for this project's current run even while FlightAware's usage page is delayed.
 
-The workflow asks for one result set at a time (`max_pages=1`), sleeps seven seconds between pages, and stops after 22 pages per airport. That keeps the request pace below 10 result sets/minute and caps each airport at 330 records.
+The workflow asks for one result set at a time (`max_pages=1`) and follows every pagination cursor until all available results are retrieved or the monthly $4.25 ceiling is reached. It sleeps seven seconds between result sets, below the Personal plan's 10 result sets/minute limit. There is no per-run or per-airport page ceiling. If the monthly cap stops a run, the dashboard marks that refresh as potentially incomplete.
 
 ## Set up FlightAware
 
@@ -25,14 +25,14 @@ The workflow asks for one result set at a time (`max_pages=1`), sleeps seven sec
 
 Edit `config/airports.json` and set `active` to one to three IATA codes. DCA and IAD are active by default. `iata_to_icao` maps common IATA codes to AeroAPI airport IDs (for example, DCA → KDCA and HND → RJTT); other U.S. codes use the `K` + IATA fallback. Add an explicit mapping for any international airport not already listed.
 
-Airport time zones are configured in `timezone_overrides`. The script requests tomorrow from 05:15 through 23:59 in each airport's local time and converts that range to UTC. After committing a config change, use **Actions → Update LootRadar Arrivals → Run workflow** for an immediate refresh.
+Airport time zones are configured in `timezone_overrides`. Each update requests one exact rolling 24-hour interval, starting when the workflow begins. The dashboard shows the range in each airport's local time; flights are sorted by scheduled/revised arrival time. After committing a config change, use **Actions → Update LootRadar Arrivals → Run workflow** for an immediate refresh.
 
 ## Notifications, photos, and rarity
 
 - New Rare, Epic, Legendary, and Mythic flights can be sent to ntfy; seen flight keys older than seven days are pruned.
 - The pipeline caches Planespotters photo URLs in `data/photo_cache.json` and queries photos for up to 60 Uncommon+ aircraft each run. Common cards can load a photo in the browser.
 - `config/rarity_rules.json` contains DCA, IAD, and DEFAULT (vacation airport) profiles and model normalization rules.
-- Scheduled arrival data is not an operational airport source. AeroAPI coverage can vary by airport and aircraft.
+- The source is scheduled-arrival data, not an operational airport feed. It includes available filed schedules, but cancellations, schedule changes, private aircraft, and provider coverage can still make it differ from Flightradar24 or actual operations. Gaps between scheduled arrivals may also be real quiet periods.
 
 ## Files
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-LootRadar — Next-Day Rare Flight & Livery Tracker
-Data pipeline: fetches tomorrow's arrivals, assigns Fortnite-style rarity,
+LootRadar — 24-Hour Rare Flight & Livery Tracker
+Data pipeline: fetches the next 24 hours of arrivals, assigns Fortnite-style rarity,
 enriches with plane-alert-db livery data, fetches Planespotters photos,
 sends ntfy.sh push notifications, and writes data/arrivals.json.
 
@@ -57,9 +57,6 @@ PLANE_ALERT_DB_URL = (
 FLIGHTAWARE_BASE = "https://aeroapi.flightaware.com/aeroapi"
 RESULT_SET_COST_USD = 0.005
 HARD_MONTHLY_CAP_USD = 4.25
-MAX_RUN_COST_USD = 0.25
-MAX_PAGES_PER_AIRPORT = 22
-RESULTS_PER_SET = 15
 PAGE_PACING_SECONDS = 7.0
 PLANESPOTTERS_REG = "https://api.planespotters.net/pub/photos/reg/{reg}"
 PLANESPOTTERS_HEX = "https://api.planespotters.net/pub/photos/hex/{hex}"
@@ -118,12 +115,6 @@ def get_timezone(iata: str, tz_overrides: dict) -> ZoneInfo:
     except (ZoneInfoNotFoundError, KeyError):
         log.warning("Unknown timezone %s for %s, using UTC", tz_name, iata)
         return ZoneInfo("UTC")
-
-
-def tomorrow_date(tz: ZoneInfo) -> str:
-    """Return YYYY-MM-DD for 'tomorrow' in the given timezone."""
-    now_local = datetime.now(tz)
-    return (now_local + timedelta(days=1)).strftime("%Y-%m-%d")
 
 
 def airport_icao(iata: str, config: dict) -> str:
@@ -341,23 +332,20 @@ def fetch_arrivals_for_airport(
     session: requests.Session,
     iata: str,
     icao: str,
-    target_date: str,
+    window_start_utc: datetime,
+    window_end_utc: datetime,
     headers: dict,
-    tz: ZoneInfo,
     ledger: dict,
     month: str,
     month_spend: float,
     run_meter: dict,
-    force_budget_override: bool = False,
 ) -> list[dict]:
-    """Fetch tomorrow's 05:15–23:59 local arrivals one result set per request."""
-    start_local = datetime.fromisoformat(f"{target_date}T05:15:00").replace(tzinfo=tz)
-    end_local = datetime.fromisoformat(f"{target_date}T23:59:59").replace(tzinfo=tz)
+    """Fetch every scheduled arrival in the next 24 hours, one result set per request."""
     params = {
-        "start": start_local.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "end": end_local.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        # One page per call keeps the 10-result-set/minute limit enforceable.
-        # The cumulative airport cap below is 22 pages (330 flights).
+        "start": window_start_utc.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "end": window_end_utc.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        # One result set per request keeps the Personal-tier rate limit
+        # enforceable. Continue pagination until exhausted or the monthly cap.
         "max_pages": 1,
     }
     url = f"{FLIGHTAWARE_BASE}/airports/{icao}/flights/scheduled_arrivals"
@@ -365,15 +353,11 @@ def fetch_arrivals_for_airport(
     next_params = params
     arrivals = []
     airport_pages = 0
-    while airport_pages < MAX_PAGES_PER_AIRPORT:
+    while True:
         ledger_month_cost = float((ledger.get(month, {}) or {}).get("estimated_cost_usd", 0) or 0)
         accounted_month_spend = max(month_spend, ledger_month_cost)
         if accounted_month_spend + RESULT_SET_COST_USD > HARD_MONTHLY_CAP_USD:
-            log.warning("Monthly safety cap ($4.25) reached — skipping API fetch to guarantee $0 billing")
-            run_meter["incomplete"] = True
-            break
-        if not force_budget_override and run_meter["cost"] + RESULT_SET_COST_USD > MAX_RUN_COST_USD:
-            log.warning("Run safety cap ($0.25) reached — stopping additional API pages")
+            log.warning("Monthly safety cap ($4.25) reached — stopping additional API pages")
             run_meter["incomplete"] = True
             break
         last_request = run_meter.get("last_request_at")
@@ -394,10 +378,9 @@ def fetch_arrivals_for_airport(
         # AeroAPI returns num_pages for the result sets actually delivered.
         pages = max(1, int(payload.get("num_pages", 1) or 1))
         airport_pages += pages
-        run_meter["cost"] += pages * RESULT_SET_COST_USD
         record_usage(ledger, month, pages)
         month_spend += pages * RESULT_SET_COST_USD
-        log.info("%s page %d/%d: %d arrivals", iata, airport_pages, MAX_PAGES_PER_AIRPORT, len(items))
+        log.info("%s result set %d: %d arrivals", iata, airport_pages, len(items))
 
         next_ref = (payload.get("links") or {}).get("next")
         if not next_ref:
@@ -430,8 +413,6 @@ def fetch_arrivals_for_airport(
         query["max_pages"] = "1"
         next_url = urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 
-    if airport_pages >= MAX_PAGES_PER_AIRPORT and next_url:
-        run_meter["incomplete"] = True
     return arrivals
 
 
@@ -587,7 +568,7 @@ def send_ntfy(
     body = (
         f"{icao_type} ({reg}) • {rarity_reason} • "
         f"From: {origin_iata} ({origin_city}) • "
-        f"Arriving Tomorrow at {arr_time_str}"
+        f"Scheduled arrival at {arr_time_str} local time"
     )
 
     headers = {
@@ -651,7 +632,6 @@ def main():
     airports_config = load_json(AIRPORTS_JSON, {"active": ["DCA", "IAD"], "timezone_overrides": {}, "presets": []})
     rarity_config = load_json(RARITY_JSON, {"profiles": {}, "icao_type_normalization": {"keywords": []}})
     active_airports = [str(a).upper() for a in airports_config.get("active", ["DCA", "IAD"])[:3]]
-    force_budget_override = bool(airports_config.get("force_budget_override", False))
     tz_overrides = airports_config.get("timezone_overrides", {})
     if not active_airports:
         log.error("No active airports configured.")
@@ -677,23 +657,31 @@ def main():
     norm_map = build_normalization_map(rarity_config)
     reg_lookup, hex_lookup = download_plane_alert_db(session)
     all_flights = []
-    run_meter = {"cost": 0.0}
+    # Use a single exact 24-hour UTC interval for all airports. Each airport's
+    # display timezone is recorded separately so the dashboard can show local time.
+    window_start_utc = datetime.now(timezone.utc).replace(microsecond=0)
+    window_end_utc = window_start_utc + timedelta(hours=24)
+    airport_timezones = {
+        iata: get_timezone(iata, tz_overrides).key for iata in active_airports
+    }
+    run_meter = {}
     complete = True
     for iata in active_airports:
         tz = get_timezone(iata, tz_overrides)
-        target_date = tomorrow_date(tz)
         icao = airport_icao(iata, airports_config)
-        log.info("Fetching %s (%s) arrivals for %s", iata, icao, target_date)
+        local_start = window_start_utc.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
+        local_end = window_end_utc.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
+        log.info("Fetching %s (%s) arrivals for next 24 hours: %s to %s", iata, icao, local_start, local_end)
         try:
-            raw_arrivals = fetch_arrivals_for_airport(session, iata, icao, target_date,
-                {"x-apikey": api_key, "Accept": "application/json"}, tz, ledger, month, month_spend, run_meter, force_budget_override)
+            raw_arrivals = fetch_arrivals_for_airport(session, iata, icao, window_start_utc, window_end_utc,
+                {"x-apikey": api_key, "Accept": "application/json"}, ledger, month, month_spend, run_meter)
         except requests.RequestException as exc:
             log.error("FlightAware request failed for %s: %s", iata, exc)
             complete = False
             break
         if run_meter.get("incomplete"):
             complete = False
-            log.warning("Budget or result-set safety limit stopped later airport requests")
+            log.warning("Budget or API rate limit stopped later airport requests")
 
         seen_in_batch = set()
         for raw in raw_arrivals:
@@ -741,19 +729,32 @@ def main():
                 seen_flights[flight["id"]] = datetime.now(timezone.utc).isoformat()
                 time.sleep(0.5)
 
-    all_flights.sort(key=lambda f: (-RARITY_ORDER.index(f["rarity"]), f["arrival"]["revised_local"] or f["arrival"]["scheduled_local"] or "9999"))
+    def chronological_key(flight):
+        value = flight["arrival"].get("revised_local") or flight["arrival"].get("scheduled_local") or flight["arrival"].get("scheduled_utc")
+        if not value:
+            return datetime.max.replace(tzinfo=timezone.utc)
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=timezone.utc)
+            return parsed.astimezone(timezone.utc)
+        except ValueError:
+            return datetime.max.replace(tzinfo=timezone.utc)
+
+    all_flights.sort(key=chronological_key)
     now = datetime.now(timezone.utc)
-    target_date = max([((f["arrival"]["scheduled_local"] or "")[:10]) for f in all_flights] or [(now + timedelta(days=1)).strftime("%Y-%m-%d")])
+    target_date = window_start_utc.astimezone(get_timezone(active_airports[0], tz_overrides)).strftime("%Y-%m-%d")
     ledger_entry = ledger.get(month, {})
     output = {"_meta": {
         "generated": now.isoformat(), "target_date": target_date, "airports": active_airports,
+        "window_hours": 24, "window_start_utc": window_start_utc.isoformat(),
+        "window_end_utc": window_end_utc.isoformat(), "airport_timezones": airport_timezones,
         "total_flights": len(all_flights), "rarity_counts": rarity_counts,
         "last_updated_utc": now.isoformat(), "last_updated_local": datetime.now(ZoneInfo("America/New_York")).isoformat(),
         "is_sample_data": False, "source": "FlightAware AeroAPI v4", "fetch_complete": complete,
         "budget": {"month": month, "estimated_cost_usd": max(month_spend, float(ledger_entry.get("estimated_cost_usd", 0))),
             "monthly_cap_usd": HARD_MONTHLY_CAP_USD, "free_credit_usd": 5.00,
-            "result_sets_used": int(ledger_entry.get("result_sets_used", 0)), "rate": "estimate; FlightAware usage can lag",
-            "force_budget_override": force_budget_override}
+            "result_sets_used": int(ledger_entry.get("result_sets_used", 0)), "rate": "estimate; FlightAware usage can lag"}
     }, "flights": all_flights}
     save_json(ARRIVALS_JSON, output)
     save_json(SEEN_JSON, seen_flights)

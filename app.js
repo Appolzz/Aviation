@@ -265,6 +265,11 @@ function applyFilters(flights) {
     }
 
     return true;
+  }).sort((a, b) => {
+    const aTime = Date.parse(a.arrival.revised_local || a.arrival.scheduled_local || a.arrival.scheduled_utc || '');
+    const bTime = Date.parse(b.arrival.revised_local || b.arrival.scheduled_local || b.arrival.scheduled_utc || '');
+    return (Number.isFinite(aTime) ? aTime : Number.MAX_SAFE_INTEGER) -
+      (Number.isFinite(bTime) ? bTime : Number.MAX_SAFE_INTEGER);
   });
 }
 
@@ -285,8 +290,32 @@ function renderDateBanner(meta) {
     el.innerHTML = `<strong>Sample Data</strong> — Run the GitHub Action to get live arrivals`;
     return;
   }
+  if (meta.window_start_utc && meta.window_end_utc) {
+    const zones = meta.airport_timezones || {};
+    const grouped = {};
+    Object.entries(zones).forEach(([airport, timeZone]) => {
+      (grouped[timeZone] ||= []).push(airport);
+    });
+    const ranges = Object.entries(grouped).map(([timeZone, airports]) => {
+      const start = new Date(meta.window_start_utc);
+      const end = new Date(meta.window_end_utc);
+      const dateTime = { timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' };
+      const startText = start.toLocaleString('en-US', dateTime);
+      const endText = end.toLocaleString('en-US', dateTime);
+      const zoneText = end.toLocaleString('en-US', { timeZone, timeZoneName: 'short' }).split(' ').pop();
+      return `${airports.join('/')} local: ${startText} – ${endText} ${zoneText}`;
+    });
+    const rangeText = ranges.length ? ` · ${ranges.join(' · ')}` : '';
+    const partialText = meta.fetch_complete === false
+      ? ' · Some results could not be fetched; this list may be incomplete.'
+      : '';
+    el.innerHTML = `<strong>Next 24 hours</strong>${rangeText}${partialText}`;
+    el.title = el.textContent;
+    return;
+  }
   const dateStr = formatTargetDate(meta.target_date);
-  el.innerHTML = `Tomorrow's Arrivals: <strong>${dateStr}</strong>`;
+  el.innerHTML = `Arrivals starting ${dateStr}`;
+  el.title = el.textContent;
 }
 
 function renderLastUpdated(meta) {
