@@ -54,6 +54,7 @@ PLANE_ALERT_DB_URL = (
 )
 AERODATABOX_HOST = "aerodatabox.p.rapidapi.com"
 AERODATABOX_BASE = f"https://{AERODATABOX_HOST}/flights/airports/iata"
+API_MARKET_BASE = "https://prod.api.market/api/v1/aedbx/aerodatabox/flights/airports/iata"
 PLANESPOTTERS_REG = "https://api.planespotters.net/pub/photos/reg/{reg}"
 PLANESPOTTERS_HEX = "https://api.planespotters.net/pub/photos/hex/{hex}"
 NTFY_BASE = "https://ntfy.sh/{topic}"
@@ -272,13 +273,10 @@ def fetch_arrivals_for_airport(
     session: requests.Session,
     iata: str,
     target_date: str,
-    api_key: str,
+    api_base: str,
+    headers: dict,
 ) -> list[dict]:
     """Fetch 24h arrivals for one airport in two 12-hour windows."""
-    headers = {
-        "x-rapidapi-key": api_key,
-        "x-rapidapi-host": AERODATABOX_HOST,
-    }
     params = {
         "withLeg": "true",
         "direction": "Arrival",
@@ -292,7 +290,7 @@ def fetch_arrivals_for_airport(
     all_arrivals = []
 
     for start_t, end_t in windows:
-        url = f"{AERODATABOX_BASE}/{iata}/{target_date}T{start_t}/{target_date}T{end_t}"
+        url = f"{api_base}/{iata}/{target_date}T{start_t}/{target_date}T{end_t}"
         log.info("Fetching %s %s–%s …", iata, start_t, end_t)
         try:
             resp = session.get(url, headers=headers, params=params, timeout=30)
@@ -529,12 +527,26 @@ def prune_seen(seen: dict, days: int = 7) -> dict:
 
 def main():
     # --- Read secrets from environment ---
-    api_key = os.environ.get("AERODATABOX_API_KEY", "").strip()
+    rapidapi_key = os.environ.get("AERODATABOX_API_KEY", "").strip()
+    api_market_key = os.environ.get("AERODATABOX_API_MARKET_KEY", "").strip()
     ntfy_topic = os.environ.get("NTFY_TOPIC", "").strip()
 
-    if not api_key:
-        log.error("AERODATABOX_API_KEY is not set. Add it as a GitHub Actions secret before running updates.")
+    if api_market_key:
+        api_base = API_MARKET_BASE
+        api_headers = {"x-api-market-key": api_market_key}
+        api_provider = "API.Market"
+    elif rapidapi_key:
+        api_base = AERODATABOX_BASE
+        api_headers = {
+            "x-rapidapi-key": rapidapi_key,
+            "x-rapidapi-host": AERODATABOX_HOST,
+        }
+        api_provider = "RapidAPI"
+    else:
+        log.error("No AeroDataBox credential found. Add AERODATABOX_API_MARKET_KEY or AERODATABOX_API_KEY as a GitHub Actions secret.")
         sys.exit(1)
+
+    log.info("Using AeroDataBox via %s", api_provider)
 
     # --- Load config ---
     airports_config = load_json(AIRPORTS_JSON, {"active": ["DCA", "IAD"], "timezone_overrides": {}, "presets": []})
@@ -572,7 +584,7 @@ def main():
         target_date = tomorrow_date(tz)
         log.info("Fetching arrivals for %s on %s (tz: %s)", iata, target_date, tz.key)
 
-        raw_arrivals = fetch_arrivals_for_airport(session, iata, target_date, api_key)
+        raw_arrivals = fetch_arrivals_for_airport(session, iata, target_date, api_base, api_headers)
 
         # Deduplicate by flight number within this airport
         seen_in_batch: set = set()

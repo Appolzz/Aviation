@@ -30,12 +30,18 @@ Click **Use this template** (or fork it) on GitHub. Then:
 
 ---
 
-### Step 2 — Get a Free RapidAPI AeroDataBox Key
+### Step 2 — Get an AeroDataBox API Key
 
 1. Go to [RapidAPI AeroDataBox](https://rapidapi.com/aerodatabox/api/aerodatabox)
 2. Sign up free and **subscribe to the Basic plan** (400 free units/month)
 3. Copy your **API key** from the "Header Parameters" section (`x-rapidapi-key`)
 4. The script fetches 2 airports × 2 windows = **4 API calls/day** = ~120/month — well within the free tier
+
+#### Temporary alternative while RapidAPI login is unavailable
+
+AeroDataBox also offers access through [API.Market](https://apimarket.aerodatabox.com/). Create an API.Market account, subscribe to the AeroDataBox plan shown there, and copy its API key. API.Market's trial terms and unit quota may differ from RapidAPI's; check the current plan before relying on it.
+
+Add that key to GitHub Actions secrets as `AERODATABOX_API_MARKET_KEY`. The workflow will use this key first when it is present. When RapidAPI works again, remove the API.Market secret from GitHub to switch back to the existing `AERODATABOX_API_KEY` secret.
 
 ---
 
@@ -59,9 +65,10 @@ Add these two secrets:
 | Secret Name | Value |
 |---|---|
 | `AERODATABOX_API_KEY` | Your RapidAPI key from Step 2 |
+| `AERODATABOX_API_MARKET_KEY` | Optional temporary API.Market key (takes priority when set) |
 | `NTFY_TOPIC` | Your chosen ntfy topic name (e.g. `lootrada-yourname-dca`) |
 
-> **Note**: `AERODATABOX_API_KEY` is required for live flight updates. If it is missing, the update stops without overwriting the current sample or live data. `NTFY_TOPIC` is optional; without it, arrivals still update but phone notifications are skipped.
+> **Note**: At least one AeroDataBox key is required for live flight updates. If neither is set, the update stops without overwriting the current sample or live data. `NTFY_TOPIC` is optional; without it, arrivals still update but phone notifications are skipped.
 
 ---
 

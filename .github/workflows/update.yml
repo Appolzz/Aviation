@@ -38,6 +38,7 @@ jobs:
       - name: Run LootRadar update pipeline
         env:
           AERODATABOX_API_KEY: ${{ secrets.AERODATABOX_API_KEY }}
+          AERODATABOX_API_MARKET_KEY: ${{ secrets.AERODATABOX_API_MARKET_KEY }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: python scripts/update_arrivals.py
 
