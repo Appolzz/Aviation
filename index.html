@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LootRadar — Rare Flight & Livery Tracker</title>
   <meta name="description" content="Track daytime scheduled arrivals at DCA and IAD with chronological flight listings and rarity filters." />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#0d1117" />
 
   <!-- PWA / Home Screen -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -77,6 +77,12 @@
   <section class="filter-section" id="filter-section">
     <div class="filter-inner">
 
+      <button class="filter-menu-toggle" id="filter-menu-toggle" aria-expanded="false" aria-controls="filter-content">
+        <span>Filters &amp; search</span><span class="filter-menu-summary" id="filter-menu-summary">All flights</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="filter-content" id="filter-content">
+
       <!-- Rarity filter pills -->
       <div class="rarity-strip" id="rarity-strip" role="group" aria-label="Filter by rarity">
         <button class="rarity-pill active" data-rarity="all" id="pill-all">
@@ -84,32 +90,26 @@
           <span class="pill-count" id="count-all">0</span>
         </button>
         <button class="rarity-pill mythic" data-rarity="Mythic" id="pill-mythic">
-          <span class="pill-emoji">👑</span>
           <span class="pill-label">Mythic</span>
           <span class="pill-count" id="count-mythic">0</span>
         </button>
         <button class="rarity-pill legendary" data-rarity="Legendary" id="pill-legendary">
-          <span class="pill-emoji">🌟</span>
           <span class="pill-label">Legendary</span>
           <span class="pill-count" id="count-legendary">0</span>
         </button>
         <button class="rarity-pill epic" data-rarity="Epic" id="pill-epic">
-          <span class="pill-emoji">✨</span>
           <span class="pill-label">Epic</span>
           <span class="pill-count" id="count-epic">0</span>
         </button>
         <button class="rarity-pill rare" data-rarity="Rare" id="pill-rare">
-          <span class="pill-emoji">💙</span>
           <span class="pill-label">Rare</span>
           <span class="pill-count" id="count-rare">0</span>
         </button>
         <button class="rarity-pill uncommon" data-rarity="Uncommon" id="pill-uncommon">
-          <span class="pill-emoji">🟢</span>
           <span class="pill-label">Uncommon</span>
           <span class="pill-count" id="count-uncommon">0</span>
         </button>
         <button class="rarity-pill common" data-rarity="Common" id="pill-common">
-          <span class="pill-emoji">⬜</span>
           <span class="pill-label">Common</span>
           <span class="pill-count" id="count-common">0</span>
         </button>
@@ -159,6 +159,8 @@
             <span id="result-count-num">0</span> flights
           </div>
         </div>
+      </div>
+
       </div>
 
     </div>

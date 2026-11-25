@@ -37,10 +37,6 @@ const RARITY_GLOW = {
   Mythic:    'rgba(239,68,68,0.4)',
 };
 
-const RARITY_EMOJI = {
-  Mythic: '👑', Legendary: '🌟', Epic: '✨', Rare: '💙', Uncommon: '🟢', Common: '⬜',
-};
-
 const RARITY_OVERRIDE_STORAGE_KEY = 'lootrada-rarity-overrides-v1';
 
 function readRarityOverrides() {
@@ -484,7 +480,7 @@ function buildCardHTML(flight) {
         <!-- Rarity badge + livery pill -->
         <div class="card-rarity-row">
           <span class="rarity-badge ${rClass}">
-            ${RARITY_EMOJI[flight.rarity] || ''} ${esc(flight.rarity)}
+            ${esc(flight.rarity)}
           </span>
           ${reasonLabel ? `<span class="livery-pill" title="${esc(reasonLabel)}"${liveryCls}>${esc(reasonLabel)}</span>` : ''}
         </div>
@@ -588,6 +584,11 @@ function renderModal(airports, presets) {
 function renderAll() {
   const filtered = applyFilters(state.flights);
   updateRarityCounts(state.flights); // always show totals for unfiltered
+  const menuSummary = document.getElementById('filter-menu-summary');
+  if (menuSummary) {
+    const selected = [state.activeRarity !== 'all' ? state.activeRarity : '', state.activeAirport !== 'all' ? state.activeAirport : '', state.activeTime !== 'all' ? state.activeTime : '', state.hideCommon ? 'Hide common' : ''].filter(Boolean);
+    menuSummary.textContent = selected.length ? selected.join(' · ') : 'All flights';
+  }
   renderAirportFilterTabs(state.airports);
   updateActiveRarityPills();
   updateActiveTimeTabs();
@@ -786,6 +787,12 @@ async function loadData() {
 // Event listeners
 // ============================================================
 function attachEventListeners() {
+  const filterToggle = document.getElementById('filter-menu-toggle');
+  filterToggle.addEventListener('click', () => {
+    const expanded = filterToggle.getAttribute('aria-expanded') === 'true';
+    filterToggle.setAttribute('aria-expanded', String(!expanded));
+    document.getElementById('filter-section').classList.toggle('filters-open', !expanded);
+  });
   document.getElementById('flights-grid').addEventListener('change', event => {
     const select = event.target.closest('.rarity-override-select');
     if (!select) return;

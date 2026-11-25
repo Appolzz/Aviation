@@ -1246,6 +1246,95 @@ code, .mono {
   .btn-fr24 { font-size: 0.58rem; }
 }
 
+/* Minimal GitHub dark surfaces and controls */
+:root {
+  --bg-base: #0d1117;
+  --bg-surface: #161b22;
+  --bg-elevated: #21262d;
+  --bg-card: #161b22;
+  --bg-card-hover: #1c2128;
+  --border-subtle: rgba(240,246,252,.10);
+  --border-mid: #30363d;
+  --text-primary: #e6edf3;
+  --text-secondary: #c9d1d9;
+  --text-muted: #8b949e;
+  --brand-primary: #2f81f7;
+  --brand-light: #58a6ff;
+  --brand-glow: rgba(47,129,247,.18);
+}
+
+body {
+  background-color: var(--bg-base);
+  background-image: none;
+  font-family: Roboto, 'Inter', system-ui, sans-serif;
+}
+
+.app-header, .filter-section {
+  background: rgba(22,27,34,.96);
+  box-shadow: 0 2px 12px rgba(0,0,0,.22);
+}
+.brand-name { background: none; color: var(--brand-light); -webkit-text-fill-color: currentColor; }
+.brand-icon { animation: none; }
+.btn-vacation, .btn-github, .btn-reset {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: 6px;
+  color: var(--brand-light);
+  box-shadow: none;
+}
+.btn-vacation:hover, .btn-github:hover, .btn-reset:hover { transform: none; box-shadow: none; background: #30343a; }
+.rarity-pill, .filter-tab, .btn-toggle-common, .search-input {
+  min-height: 40px;
+}
+.rarity-pill { background: var(--bg-elevated); border: 1px solid var(--border-subtle); }
+.rarity-pill:hover { transform: none; }
+.rarity-pill.active { box-shadow: none !important; }
+.pill-count { background: rgba(255,255,255,.09); }
+.filter-tab.active { background: rgba(47,129,247,.16); border-color: rgba(47,129,247,.42); color: var(--brand-light); }
+.search-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(47,129,247,.16); }
+.flight-card { border-radius: var(--radius-lg); box-shadow: 0 2px 10px rgba(0,0,0,.2); }
+.flight-card:hover { transform: translateY(-2px); }
+.rarity-badge { text-shadow: none !important; }
+
+.filter-menu-toggle { display: none; }
+@media (max-width: 600px) {
+  html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+  .filter-section { top: auto; position: sticky; z-index: 90; padding: 8px 10px; }
+  .filter-inner { padding: 0; gap: 0; min-width: 0; }
+  .filter-menu-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%; min-width: 0; min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--border-mid);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font: 600 .88rem Roboto, 'Inter', sans-serif;
+    text-align: left;
+  }
+  .filter-menu-summary { color: var(--text-muted); font-size: .72rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: auto; }
+  .filter-menu-toggle svg { flex: 0 0 auto; transition: transform .18s ease; }
+  .filter-menu-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .filter-content { display: none; max-height: min(60dvh, 520px); overflow-y: auto; overscroll-behavior: contain; padding: 12px 2px 4px; }
+  .filters-open .filter-content { display: block; }
+  .rarity-strip { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; overflow: visible; padding: 0; }
+  .rarity-pill { min-width: 0; justify-content: center; padding: 6px 8px; font-size: .72rem; }
+  .pill-label { display: inline !important; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .pill-count { min-width: 18px; height: 18px; font-size: .65rem; }
+  .filter-row { display: grid; grid-template-columns: minmax(0,1fr); align-items: stretch; gap: 10px; margin-top: 10px; }
+  .filter-group { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 5px; min-width: 0; }
+  #airport-filter-group { grid-template-columns: repeat(auto-fit, minmax(72px,1fr)); }
+  .filter-tab { min-width: 0; padding: 6px 4px; font-size: .68rem; white-space: normal; }
+  .filter-controls { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; width: 100%; margin: 0; }
+  .search-wrapper { min-width: 0; }
+  .search-input { width: 100%; min-width: 0; font-size: 16px; }
+  .btn-toggle-common { justify-content: center; padding: 6px 10px; font-size: .68rem; }
+  .result-count { grid-column: 1 / -1; text-align: right; }
+  .flights-container, .flights-grid, .flight-card { min-width: 0; max-width: 100%; }
+}
+
 /* Animated card entrance stagger */
 .flight-card:nth-child(1)  { animation-delay: 0.03s; }
 .flight-card:nth-child(2)  { animation-delay: 0.06s; }
