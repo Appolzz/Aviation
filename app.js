@@ -41,6 +41,40 @@ const RARITY_EMOJI = {
   Mythic: '👑', Legendary: '🌟', Epic: '✨', Rare: '💙', Uncommon: '🟢', Common: '⬜',
 };
 
+const RARITY_OVERRIDE_STORAGE_KEY = 'lootrada-rarity-overrides-v1';
+
+function readRarityOverrides() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(RARITY_OVERRIDE_STORAGE_KEY) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+let savedRarityOverrides = readRarityOverrides();
+
+function rarityOverrideKey(flight) {
+  const aircraft = flight.aircraft || {};
+  const identity = aircraft.reg || aircraft.modeS;
+  if (!identity) {
+    return [flight.airport, aircraft.icao_type || aircraft.model, flight.livery_or_note || flight.airline?.name]
+      .filter(Boolean).join(':').toLowerCase();
+  }
+  return `aircraft:${identity}`.toLowerCase();
+}
+
+function applySavedRarityOverrides() {
+  for (const flight of state.flights) {
+    flight._automaticRarity ??= flight.rarity;
+    flight._automaticReason ??= flight.rarity_reason;
+    const override = savedRarityOverrides[rarityOverrideKey(flight)];
+    flight._rarityOverride = RARITY_ORDER.includes(override) ? override : null;
+    flight.rarity = flight._rarityOverride || flight._automaticRarity;
+    flight.rarity_reason = flight._rarityOverride ? 'Saved custom rarity on this device' : flight._automaticReason;
+  }
+}
+
 // SVG silhouettes keyed by rough category
 const SILHOUETTES = {
   widebody: `<svg viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="120" height="48">
@@ -134,9 +168,9 @@ function formatArrivalDate(flight) {
 function getTimeOfDay(local) {
   const t = parseLocalTime(local);
   if (!t) return 'unknown';
-  if (t.h >= 5 && t.h < 12) return 'morning';
+  if (t.h >= 6 && t.h < 12) return 'morning';
   if (t.h >= 12 && t.h < 17) return 'afternoon';
-  if (t.h >= 17 && t.h < 21) return 'evening';
+  if (t.h >= 17 && t.h < 22) return 'evening';
   return 'night';
 }
 
@@ -309,7 +343,10 @@ function renderDateBanner(meta) {
     const partialText = meta.fetch_complete === false
       ? ' · Some results could not be fetched; this list may be incomplete.'
       : '';
-    el.innerHTML = `<strong>Next 24 hours</strong>${rangeText}${partialText}`;
+    const hoursText = meta.excluded_local_hours === '22:00-06:00'
+      ? ' · 10pm–6am excluded to reduce API use'
+      : '';
+    el.innerHTML = `<strong>Next 24 hours</strong>${rangeText}${hoursText}${partialText}`;
     el.title = el.textContent;
     return;
   }
@@ -412,7 +449,9 @@ function buildCardHTML(flight) {
   }
 
   // Rarity reason or livery note
-  const reasonLabel = flight.livery_or_note || flight.rarity_reason || flight.rarity;
+  const reasonLabel = flight._rarityOverride
+    ? 'Custom rarity · saved on this device'
+    : (flight.livery_or_note || flight.rarity_reason || flight.rarity);
   const liveryCls = flight.plane_alert_match ? ` style="border-color: ${color}44; color: ${color}"` : '';
 
   // Origin display
@@ -475,6 +514,14 @@ function buildCardHTML(flight) {
           ${icaoType ? `<span class="aircraft-type">${esc(icaoType)}</span>` : ''}
           ${reg ? `<span class="aircraft-reg">${esc(reg)}</span>` : ''}
         </div>
+
+        <label class="rarity-override-control">
+          <span>Set rarity</span>
+          <select class="rarity-override-select" data-flight-id="${esc(flight.id)}" aria-label="Set rarity for ${esc(flight.flight_number || 'this aircraft')}">
+            <option value=""${flight._rarityOverride ? '' : ' selected'}>Automatic (${esc(flight._automaticRarity || flight.rarity)})</option>
+            ${RARITY_ORDER.map(rarity => `<option value="${rarity}"${flight._rarityOverride === rarity ? ' selected' : ''}>${rarity}</option>`).join('')}
+          </select>
+        </label>
 
         <!-- Track button -->
         <a class="btn-fr24"
@@ -704,6 +751,7 @@ async function loadData() {
     const airportsConfig = await airportsResp.json();
 
     state.flights = arrivals.flights || [];
+    applySavedRarityOverrides();
     state.meta = arrivals._meta || {};
     state.airports = state.meta.airports || airportsConfig.active || [];
     state.presets = airportsConfig.presets || [];
@@ -735,6 +783,27 @@ async function loadData() {
 // Event listeners
 // ============================================================
 function attachEventListeners() {
+  document.getElementById('flights-grid').addEventListener('change', event => {
+    const select = event.target.closest('.rarity-override-select');
+    if (!select) return;
+    const flight = state.flights.find(item => item.id === select.dataset.flightId);
+    if (!flight) return;
+    const key = rarityOverrideKey(flight);
+    if (select.value && RARITY_ORDER.includes(select.value)) {
+      savedRarityOverrides[key] = select.value;
+    } else {
+      delete savedRarityOverrides[key];
+    }
+    try {
+      localStorage.setItem(RARITY_OVERRIDE_STORAGE_KEY, JSON.stringify(savedRarityOverrides));
+      applySavedRarityOverrides();
+      renderAll();
+      showToast(select.value ? 'Rarity saved on this device' : 'Automatic rarity restored');
+    } catch {
+      showToast('Could not save rarity in this browser');
+    }
+  });
+
   // Rarity pills
   document.querySelectorAll('.rarity-pill').forEach(btn => {
     btn.addEventListener('click', () => {

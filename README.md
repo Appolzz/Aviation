@@ -1,6 +1,6 @@
 # LootRadar — 24-Hour Rare Flight & Livery Tracker
 
-LootRadar is a static GitHub Pages dashboard backed by a daily GitHub Actions pipeline. It loads all available scheduled arrivals in the next rolling 24 hours for DCA and IAD from FlightAware AeroAPI v4, assigns airport-specific rarity, enriches aircraft with public livery/photo data, and can send rare-flight alerts through ntfy.sh. Flights are listed by arrival time; rarity buttons filter the list without changing that order.
+LootRadar is a static GitHub Pages dashboard backed by a daily GitHub Actions pipeline. It loads available scheduled arrivals in the next rolling 24 hours for DCA and IAD from FlightAware AeroAPI v4, excluding 10 p.m.–6 a.m. in each airport's local time to reduce API requests. It assigns airport-specific rarity, enriches aircraft with public livery/photo data, and can send rare-flight alerts through ntfy.sh. Flights are listed by arrival time; rarity buttons filter the list without changing that order.
 
 ## Cost and budget protections
 
@@ -25,13 +25,14 @@ The workflow asks for one result set at a time (`max_pages=1`) and follows every
 
 Edit `config/airports.json` and set `active` to one to three IATA codes. DCA and IAD are active by default. `iata_to_icao` maps common IATA codes to AeroAPI airport IDs (for example, DCA → KDCA and HND → RJTT); other U.S. codes use the `K` + IATA fallback. Add an explicit mapping for any international airport not already listed.
 
-Airport time zones are configured in `timezone_overrides`. Each update requests one exact rolling 24-hour interval, starting when the workflow begins. The dashboard shows the range in each airport's local time; flights are sorted by scheduled/revised arrival time. After committing a config change, use **Actions → Update LootRadar Arrivals → Run workflow** for an immediate refresh.
+Airport time zones are configured in `timezone_overrides`. Each update uses a rolling 24-hour outlook, starting when the workflow begins, and requests only the portions between 06:00 and 22:00 local time. Flights during the excluded overnight period do not appear. The dashboard shows the outlook range in each airport's local time; flights are sorted by scheduled/revised arrival time. After committing a config change, use **Actions → Update LootRadar Arrivals → Run workflow** for an immediate refresh.
 
 ## Notifications, photos, and rarity
 
 - New Rare, Epic, Legendary, and Mythic flights can be sent to ntfy; seen flight keys older than seven days are pruned.
 - The pipeline caches Planespotters photo URLs in `data/photo_cache.json` and queries photos for up to 60 Uncommon+ aircraft each run. Common cards can load a photo in the browser.
 - `config/rarity_rules.json` contains DCA, IAD, and DEFAULT (vacation airport) profiles and model normalization rules.
+- Each flight card has a **Set rarity** control. Overrides are saved in this browser and reapplied when future flight data refreshes. They do not sync to other browsers or devices.
 - The source is scheduled-arrival data, not an operational airport feed. It includes available filed schedules, but cancellations, schedule changes, private aircraft, and provider coverage can still make it differ from Flightradar24 or actual operations. Gaps between scheduled arrivals may also be real quiet periods.
 
 ## Files

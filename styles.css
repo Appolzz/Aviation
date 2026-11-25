@@ -864,6 +864,27 @@ code, .mono {
   font-size: 0.72rem;
 }
 
+.rarity-override-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+
+.rarity-override-select {
+  max-width: 68%;
+  padding: 5px 8px;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  cursor: pointer;
+}
+
 /* FR24 button */
 .btn-fr24 {
   display: flex;
@@ -1131,11 +1152,54 @@ code, .mono {
 }
 
 @media (max-width: 600px) {
+  .flights-container { padding: 12px 10px 36px; }
+  .flights-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .flight-card { min-width: 0; border-radius: 12px; }
+  .card-photo { height: clamp(74px, 24vw, 112px); }
+  .card-body { padding: 9px 9px 10px; }
+  .card-rarity-row { gap: 5px; margin-bottom: 7px; }
+  .rarity-badge { padding: 3px 6px; font-size: 0.58rem; letter-spacing: 0.04em; }
+  .livery-pill { max-width: 100%; padding: 2px 5px; font-size: 0.58rem; }
+  .card-meta-row { gap: 4px 6px; margin-bottom: 6px; flex-wrap: wrap; }
+  .airport-badge { padding: 2px 5px; font-size: 0.63rem; }
+  .arrival-time { font-size: 0.88rem; }
+  .arrival-date { font-size: 0.62rem; }
+  .time-tz { font-size: 0.55rem; }
+  .status-badge { margin-left: 0; padding: 2px 4px; font-size: 0.52rem; letter-spacing: 0.03em; }
+  .card-flight-row { margin-bottom: 6px; min-width: 0; }
+  .flight-num { display: block; font-size: 0.82rem; }
+  .airline-name {
+    display: block;
+    max-width: 100%;
+    margin: 2px 0 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.65rem;
+  }
+  .card-route { gap: 4px; margin-bottom: 6px; font-size: 0.64rem; flex-wrap: wrap; }
+  .route-terminal { font-size: 0.58rem; }
+  .card-aircraft { gap: 4px; margin-bottom: 8px; font-size: 0.63rem; }
+  .aircraft-model { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .aircraft-type, .aircraft-reg { font-size: 0.58rem; }
+  .btn-fr24 { gap: 4px; padding: 7px 4px; font-size: 0.63rem; }
+  .btn-fr24 svg { width: 12px; height: 12px; flex: 0 0 auto; }
+  .rarity-override-control { align-items: flex-start; flex-direction: column; gap: 3px; margin-top: 7px; }
+  .rarity-override-select { width: 100%; min-width: 0; font-size: 0.65rem; }
   .brand-tagline { display: none; }
   .date-banner { font-size: 0.75rem; }
   .rarity-pill { padding: 5px 9px; font-size: 0.72rem; }
   .pill-label { display: none; }
   .pill-label-sm { display: inline; }
+}
+
+@media (max-width: 360px) {
+  .flights-grid { gap: 7px; }
+  .card-body { padding: 8px 7px; }
+  .btn-fr24 { font-size: 0.58rem; }
 }
 
 /* Animated card entrance stagger */

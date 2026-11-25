@@ -17,7 +17,7 @@ import re
 import sys
 import time
 from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time as datetime_time, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -416,6 +416,26 @@ def fetch_arrivals_for_airport(
     return arrivals
 
 
+def daytime_intervals(
+    window_start_utc: datetime,
+    window_end_utc: datetime,
+    tz: ZoneInfo,
+) -> list[tuple[datetime, datetime]]:
+    """Return portions of the rolling window between 06:00 and 22:00 local."""
+    intervals = []
+    day = window_start_utc.astimezone(tz).date()
+    final_day = window_end_utc.astimezone(tz).date()
+    while day <= final_day:
+        day_start = datetime.combine(day, datetime_time(6), tzinfo=tz).astimezone(timezone.utc)
+        day_end = datetime.combine(day, datetime_time(22), tzinfo=tz).astimezone(timezone.utc)
+        start = max(window_start_utc, day_start)
+        end = min(window_end_utc, day_end)
+        if start < end:
+            intervals.append((start, end))
+        day += timedelta(days=1)
+    return intervals
+
+
 def local_iso(value: str | None, tz: ZoneInfo) -> str | None:
     if not value:
         return None
@@ -657,8 +677,8 @@ def main():
     norm_map = build_normalization_map(rarity_config)
     reg_lookup, hex_lookup = download_plane_alert_db(session)
     all_flights = []
-    # Use a single exact 24-hour UTC interval for all airports. Each airport's
-    # display timezone is recorded separately so the dashboard can show local time.
+    # Use the same rolling 24-hour UTC outlook for all airports, but only query
+    # daytime periods (06:00–22:00 in each airport's local timezone).
     window_start_utc = datetime.now(timezone.utc).replace(microsecond=0)
     window_end_utc = window_start_utc + timedelta(hours=24)
     airport_timezones = {
@@ -671,10 +691,18 @@ def main():
         icao = airport_icao(iata, airports_config)
         local_start = window_start_utc.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
         local_end = window_end_utc.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
-        log.info("Fetching %s (%s) arrivals for next 24 hours: %s to %s", iata, icao, local_start, local_end)
+        log.info("Fetching %s (%s) daytime arrivals for next 24 hours: %s to %s (excluding 22:00–06:00 local)", iata, icao, local_start, local_end)
         try:
-            raw_arrivals = fetch_arrivals_for_airport(session, iata, icao, window_start_utc, window_end_utc,
-                {"x-apikey": api_key, "Accept": "application/json"}, ledger, month, month_spend, run_meter)
+            raw_arrivals = []
+            for interval_start, interval_end in daytime_intervals(window_start_utc, window_end_utc, tz):
+                interval_start_local = interval_start.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
+                interval_end_local = interval_end.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
+                log.info("%s requested interval: %s to %s", iata, interval_start_local, interval_end_local)
+                raw_arrivals.extend(fetch_arrivals_for_airport(
+                    session, iata, icao, interval_start, interval_end,
+                    {"x-apikey": api_key, "Accept": "application/json"}, ledger, month, month_spend, run_meter))
+                if run_meter.get("incomplete"):
+                    break
         except requests.RequestException as exc:
             log.error("FlightAware request failed for %s: %s", iata, exc)
             complete = False
@@ -747,7 +775,7 @@ def main():
     ledger_entry = ledger.get(month, {})
     output = {"_meta": {
         "generated": now.isoformat(), "target_date": target_date, "airports": active_airports,
-        "window_hours": 24, "window_start_utc": window_start_utc.isoformat(),
+        "window_hours": 24, "excluded_local_hours": "22:00-06:00", "window_start_utc": window_start_utc.isoformat(),
         "window_end_utc": window_end_utc.isoformat(), "airport_timezones": airport_timezones,
         "total_flights": len(all_flights), "rarity_counts": rarity_counts,
         "last_updated_utc": now.isoformat(), "last_updated_local": datetime.now(ZoneInfo("America/New_York")).isoformat(),
