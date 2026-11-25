@@ -402,7 +402,29 @@ def fetch_arrivals_for_airport(
         next_ref = (payload.get("links") or {}).get("next")
         if not next_ref:
             break
-        next_url = urljoin(url, next_ref)
+        # AeroAPI's links.next is commonly root-relative (for example,
+        # /airports/KDCA/...?cursor=...), while the API itself lives below
+        # /aeroapi. A plain urljoin(url, next_ref) drops that API prefix and
+        # sends the next request to a non-existent route (HTTP 404).
+        next_parts = urlsplit(next_ref)
+        if next_parts.scheme or next_parts.netloc:
+            api_parts = urlsplit(FLIGHTAWARE_BASE)
+            if next_parts.netloc.lower() != api_parts.netloc.lower():
+                raise ValueError("FlightAware pagination link points outside the AeroAPI host")
+            next_path = next_parts.path
+            if not next_path.startswith(api_parts.path.rstrip("/") + "/"):
+                next_path = api_parts.path.rstrip("/") + "/" + next_path.lstrip("/")
+            next_url = urlunsplit((api_parts.scheme, api_parts.netloc, next_path, next_parts.query, ""))
+        elif next_parts.path.startswith("/"):
+            next_url = urlunsplit((
+                urlsplit(FLIGHTAWARE_BASE).scheme,
+                urlsplit(FLIGHTAWARE_BASE).netloc,
+                urlsplit(FLIGHTAWARE_BASE).path.rstrip("/") + "/" + next_parts.path.lstrip("/"),
+                next_parts.query,
+                "",
+            ))
+        else:
+            next_url = urljoin(url, next_ref)
         parts = urlsplit(next_url)
         query = dict(parse_qsl(parts.query, keep_blank_values=True))
         query["max_pages"] = "1"
