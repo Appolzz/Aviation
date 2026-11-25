@@ -56,6 +56,7 @@
 
 /* ---------- Reset & Base ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
 
 html { scroll-behavior: smooth; }
 
@@ -220,6 +221,7 @@ code, .mono {
   white-space: nowrap;
   font-family: 'JetBrains Mono', monospace;
 }
+.budget-short { display: none; }
 .budget-pill.budget-near-cap { border-color: rgba(245,158,11,0.5); color: #fcd34d; background: rgba(245,158,11,0.1); }
 .budget-pill.budget-unknown { border-color: var(--border-mid); color: var(--text-muted); background: transparent; }
 
@@ -1152,6 +1154,44 @@ code, .mono {
 }
 
 @media (max-width: 600px) {
+  .header-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 10px;
+    padding: 7px 10px;
+  }
+  .header-brand { gap: 7px; min-width: 0; }
+  .brand-icon svg { width: 30px; height: 30px; }
+  .brand-name { font-size: 1rem; }
+  .header-meta {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    gap: 6px;
+    overflow: hidden;
+  }
+  .airport-pills { gap: 4px; }
+  .airport-pill { padding: 3px 6px; font-size: 0.63rem; }
+  .airport-pill::before { font-size: 0.58rem; }
+  .date-banner { min-width: 0; font-size: 0.62rem; }
+  .last-updated { flex: 0 0 auto; font-size: 0; }
+  .last-updated .update-dot { margin-right: 0; }
+  .budget-pill { max-width: 68px; padding: 3px 5px; overflow: hidden; font-size: 0.58rem; }
+  .budget-long { display: none; }
+  .budget-short { display: inline; }
+  .btn-vacation {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    min-height: 34px;
+    padding: 6px 9px;
+    gap: 5px;
+    font-size: 0.68rem;
+  }
+  .btn-vacation svg { width: 14px; height: 14px; }
+  .btn-vacation-full { display: none; }
+  .btn-vacation-short { display: inline; }
+  .filter-section { top: 86px; }
   .flights-container { padding: 12px 10px 36px; }
   .flights-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1197,6 +1237,10 @@ code, .mono {
 }
 
 @media (max-width: 360px) {
+  .btn-vacation { width: 34px; min-width: 34px; justify-content: center; padding: 6px; }
+  .btn-vacation-short { display: none; }
+  .header-meta { gap: 4px; }
+  .budget-pill { max-width: 58px; }
   .flights-grid { gap: 7px; }
   .card-body { padding: 8px 7px; }
   .btn-fr24 { font-size: 0.58rem; }

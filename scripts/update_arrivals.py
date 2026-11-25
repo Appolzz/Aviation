@@ -283,6 +283,7 @@ def classify_rarity(
     plane_alert_entry: dict | None,
     airport: str,
     rarity_config: dict,
+    airline: dict | None = None,
 ) -> tuple[str, str]:
     """
     Return (rarity_tier, rarity_reason) for a flight.
@@ -295,6 +296,30 @@ def classify_rarity(
     pa_category = (plane_alert_entry or {}).get("category", "").lower()
     pa_tags = [(t or "").lower() for t in (plane_alert_entry or {}).get("tags", [])]
     icao_up = (icao_type or "").upper()
+    airline = airline or {}
+    airline_code = (airline.get("iata") or "").strip().upper()
+    airline_icao = (airline.get("icao") or "").strip().upper()
+    airline_name = re.sub(r"[^A-Z0-9]+", " ", (airline.get("name") or "").upper()).strip()
+
+    allowed_airline_codes = {"UA", "UAL", "DL", "DAL", "AA", "AAL", "F9", "FFT", "AS", "ASA", "WN", "SWA"}
+    allowed_airline_names = {
+        "UNITED", "UNITED AIRLINES", "DELTA", "DELTA AIR LINES", "AMERICAN", "AMERICAN AIRLINES",
+        "FRONTIER", "FRONTIER AIRLINES", "ALASKA", "ALASKA AIRLINES", "SOUTHWEST", "SOUTHWEST AIRLINES",
+    }
+    is_copa = airline_code == "CM" or airline_icao == "CMP" or "COPA" in airline_name
+    is_listed_airline = (
+        airline_code in allowed_airline_codes or airline_icao in allowed_airline_codes
+        or airline_name in allowed_airline_names
+    )
+
+    def apply_airline_rule(rarity: str, reason: str) -> tuple[str, str]:
+        # Copa is explicitly a Rare airline, regardless of the common narrowbody types it flies.
+        if is_copa:
+            return "Rare", "Copa Airlines"
+        # Other carriers receive an Uncommon floor; aircraft already classified higher stay higher.
+        if (airline_name or airline_code or airline_icao) and not is_listed_airline and rarity == "Common":
+            return "Uncommon", f"Other airline — {airline.get('name') or airline_code or airline_icao}"
+        return rarity, reason
 
     tier_names = ["mythic", "legendary", "epic", "rare", "uncommon", "common"]
 
@@ -305,23 +330,23 @@ def classify_rarity(
 
         # 1. ICAO type list match
         if icao_up and icao_up in [t.upper() for t in tier_data.get("icao_types", [])]:
-            return tier_title, reason
+            return apply_airline_rule(tier_title, reason)
 
         # 2. plane-alert-db category match (Mythic/Epic tiers)
         pa_cats = [c.lower() for c in tier_data.get("plane_alert_categories", [])]
         if pa_cats and pa_category:
             if any(c in pa_category for c in pa_cats):
                 entry_note = (plane_alert_entry or {}).get("operator", "") or tier_title
-                return tier_title, f"{reason} — {entry_note}".strip(" —")
+                return apply_airline_rule(tier_title, f"{reason} — {entry_note}".strip(" —"))
 
         # 3. plane-alert-db any match for epic tier (special livery)
         if tier_data.get("plane_alert_match") and plane_alert_entry is not None:
             tags_str = ", ".join(plane_alert_entry.get("tags", []))
             operator = plane_alert_entry.get("operator", "")
             livery_note = tags_str or operator or "Special Livery"
-            return tier_title, f"{reason} — {livery_note}".strip(" —")
+            return apply_airline_rule(tier_title, f"{reason} — {livery_note}".strip(" —"))
 
-    return "Common", profile.get("common", {}).get("reason_template", "Standard Traffic")
+    return apply_airline_rule("Common", profile.get("common", {}).get("reason_template", "Standard Traffic"))
 
 
 # ---------------------------------------------------------------------------
@@ -728,7 +753,7 @@ def main():
                 if not icao_type and pa_entry.get("icao_type"):
                     flight["aircraft"]["icao_type"] = pa_entry["icao_type"]
                     icao_type = pa_entry["icao_type"]
-            rarity, reason = classify_rarity(icao_type, pa_entry, iata, rarity_config)
+            rarity, reason = classify_rarity(icao_type, pa_entry, iata, rarity_config, flight["airline"])
             flight["rarity"] = rarity
             flight["rarity_reason"] = reason
             flight["rarity_color"] = RARITY_COLORS.get(rarity, "#64748b")

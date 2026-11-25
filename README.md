@@ -32,6 +32,7 @@ Airport time zones are configured in `timezone_overrides`. Each update uses a ro
 - New Rare, Epic, Legendary, and Mythic flights can be sent to ntfy; seen flight keys older than seven days are pruned.
 - The pipeline caches Planespotters photo URLs in `data/photo_cache.json` and queries photos for up to 60 Uncommon+ aircraft each run. Common cards can load a photo in the browser.
 - `config/rarity_rules.json` contains DCA, IAD, and DEFAULT (vacation airport) profiles and model normalization rules.
+- Copa Airlines arrivals are classified Rare. Other airlines are at least Uncommon, except United, Delta, American, Frontier, Alaska, and Southwest; aircraft already classed above Uncommon keep the higher tier.
 - Each flight card has a **Set rarity** control. Overrides are saved in this browser and reapplied when future flight data refreshes. They do not sync to other browsers or devices.
 - The source is scheduled-arrival data, not an operational airport feed. It includes available filed schedules, but cancellations, schedule changes, private aircraft, and provider coverage can still make it differ from Flightradar24 or actual operations. Gaps between scheduled arrivals may also be real quiet periods.
 

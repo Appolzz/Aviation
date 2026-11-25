@@ -359,21 +359,24 @@ function renderLastUpdated(meta) {
   const el = document.getElementById('last-updated');
   const ts = formatLastUpdated(meta.last_updated_utc);
   el.innerHTML = `<span class="update-dot"></span>Updated ${ts}`;
+  el.title = `Updated ${ts}`;
 }
 
 function renderBudget(meta) {
   const el = document.getElementById('budget-pill');
   const budget = meta.budget;
   if (!budget) {
-    el.textContent = 'API credit: unavailable';
+    el.innerHTML = '<span class="budget-long">API credit: unavailable</span><span class="budget-short">API —</span>';
     el.classList.add('budget-unknown');
     return;
   }
   const used = Number(budget.estimated_cost_usd || 0);
   const free = Number(budget.free_credit_usd || 5);
   const cap = Number(budget.monthly_cap_usd || 4.25);
-  el.textContent = `API credit: $${used.toFixed(2)} / $${free.toFixed(2)} · stop at $${cap.toFixed(2)}`;
-  el.title = 'Estimate only: the local ledger is combined with FlightAware usage data, which may be delayed.';
+  const shortBudget = `API $${used.toFixed(2)}`;
+  const fullBudget = `API credit: $${used.toFixed(2)} / $${free.toFixed(2)} · stop at $${cap.toFixed(2)}`;
+  el.innerHTML = `<span class="budget-long">${fullBudget}</span><span class="budget-short">${shortBudget}</span>`;
+  el.title = `${fullBudget}. Estimate only: FlightAware usage data may be delayed.`;
   el.classList.toggle('budget-near-cap', used >= cap * 0.8);
 }
 
