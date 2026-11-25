@@ -2,8 +2,10 @@ name: Update LootRadar Arrivals
 
 on:
   schedule:
-    # 00:30 UTC = 7:30 PM EST / 8:30 PM EDT — captures next-day tail assignments
-    - cron: '30 0 * * *'
+    # GitHub cron is UTC. Two slots cover 10 PM America/New_York across DST;
+    # the guard below allows only the slot that is actually 10 PM local.
+    - cron: '0 2 * * *'
+    - cron: '0 3 * * *'
   workflow_dispatch:
     inputs:
       force_notify:
@@ -39,13 +41,26 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Check local schedule
+        id: schedule_guard
+        if: github.event_name == 'schedule'
+        run: |
+          local_hour="$(TZ=America/New_York date +%H)"
+          if [ "$local_hour" = "22" ]; then
+            echo "run_update=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_update=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run LootRadar update pipeline
+        if: github.event_name == 'workflow_dispatch' || steps.schedule_guard.outputs.run_update == 'true'
         env:
           FLIGHTAWARE_API_KEY: ${{ secrets.FLIGHTAWARE_API_KEY }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: python scripts/update_arrivals.py
 
       - name: Commit and push updated data
+        if: github.event_name == 'workflow_dispatch' || steps.schedule_guard.outputs.run_update == 'true'
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"

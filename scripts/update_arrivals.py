@@ -63,7 +63,7 @@ PLANESPOTTERS_HEX = "https://api.planespotters.net/pub/photos/hex/{hex}"
 NTFY_BASE = "https://ntfy.sh/{topic}"
 
 RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"]
-NOTIFY_RARITIES = {"Rare", "Epic", "Legendary", "Mythic"}
+NOTIFY_RARITIES = {"Uncommon", "Rare", "Epic", "Legendary", "Mythic"}
 
 RARITY_COLORS = {
     "Common": "#64748b",
@@ -75,6 +75,7 @@ RARITY_COLORS = {
 }
 
 RARITY_NTFY_PRIORITY = {
+    "Uncommon": "default",
     "Rare": "default",
     "Epic": "default",
     "Legendary": "high",
@@ -82,6 +83,7 @@ RARITY_NTFY_PRIORITY = {
 }
 
 RARITY_NTFY_TAGS = {
+    "Uncommon": "airplane",
     "Rare": "airplane,star",
     "Epic": "airplane,star,sparkles",
     "Legendary": "airplane,crown,rotating_light",
@@ -694,10 +696,8 @@ def main():
     norm_map = build_normalization_map(rarity_config)
     reg_lookup, hex_lookup = download_plane_alert_db(session)
     all_flights = []
-    # Use the same rolling 24-hour UTC outlook for all airports, but only query
-    # daytime periods (06:00–22:00 in each airport's local timezone).
-    window_start_utc = datetime.now(timezone.utc).replace(microsecond=0)
-    window_end_utc = window_start_utc + timedelta(hours=24)
+    # Fetch the next calendar day's daytime arrivals (06:00–22:00 local).
+    now_utc = datetime.now(timezone.utc).replace(microsecond=0)
     airport_timezones = {
         iata: get_timezone(iata, tz_overrides).key for iata in active_airports
     }
@@ -706,20 +706,16 @@ def main():
     for iata in active_airports:
         tz = get_timezone(iata, tz_overrides)
         icao = airport_icao(iata, airports_config)
-        local_start = window_start_utc.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
-        local_end = window_end_utc.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
-        log.info("Fetching %s (%s) daytime arrivals for next 24 hours: %s to %s (excluding 22:00–06:00 local)", iata, icao, local_start, local_end)
+        next_day = now_utc.astimezone(tz).date() + timedelta(days=1)
+        interval_start = datetime.combine(next_day, datetime_time(6), tzinfo=tz).astimezone(timezone.utc)
+        interval_end = datetime.combine(next_day, datetime_time(22), tzinfo=tz).astimezone(timezone.utc)
+        local_start = interval_start.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
+        local_end = interval_end.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
+        log.info("Fetching %s (%s) next-day arrivals: %s to %s", iata, icao, local_start, local_end)
         try:
-            raw_arrivals = []
-            for interval_start, interval_end in daytime_intervals(window_start_utc, window_end_utc, tz):
-                interval_start_local = interval_start.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
-                interval_end_local = interval_end.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
-                log.info("%s requested interval: %s to %s", iata, interval_start_local, interval_end_local)
-                raw_arrivals.extend(fetch_arrivals_for_airport(
-                    session, iata, icao, interval_start, interval_end,
-                    {"x-apikey": api_key, "Accept": "application/json"}, ledger, month, month_spend, run_meter))
-                if run_meter.get("incomplete"):
-                    break
+            raw_arrivals = fetch_arrivals_for_airport(
+                session, iata, icao, interval_start, interval_end,
+                {"x-apikey": api_key, "Accept": "application/json"}, ledger, month, month_spend, run_meter)
         except requests.RequestException as exc:
             log.error("FlightAware request failed for %s: %s", iata, exc)
             complete = False
@@ -804,12 +800,17 @@ def main():
 
     all_flights.sort(key=chronological_key)
     now = datetime.now(timezone.utc)
-    target_date = window_start_utc.astimezone(get_timezone(active_airports[0], tz_overrides)).strftime("%Y-%m-%d")
+    primary_tz = get_timezone(active_airports[0], tz_overrides)
+    primary_next_day = now_utc.astimezone(primary_tz).date() + timedelta(days=1)
+    target_date = primary_next_day.strftime("%Y-%m-%d")
+    display_start = datetime.combine(primary_next_day, datetime_time(6), tzinfo=primary_tz).astimezone(timezone.utc)
+    display_end = datetime.combine(primary_next_day, datetime_time(22), tzinfo=primary_tz).astimezone(timezone.utc)
     ledger_entry = ledger.get(month, {})
     output = {"_meta": {
         "generated": now.isoformat(), "target_date": target_date, "airports": active_airports,
-        "window_hours": 24, "excluded_local_hours": "22:00-06:00", "window_start_utc": window_start_utc.isoformat(),
-        "window_end_utc": window_end_utc.isoformat(), "airport_timezones": airport_timezones,
+        "window_hours": 16, "window_start_utc": display_start.isoformat(),
+        "window_end_utc": display_end.isoformat(), "airport_timezones": airport_timezones,
+        "excluded_local_hours": "none",
         "total_flights": len(all_flights), "airport_flight_counts": airport_flight_counts,
         "rarity_counts": rarity_counts,
         "last_updated_utc": now.isoformat(), "last_updated_local": datetime.now(ZoneInfo("America/New_York")).isoformat(),

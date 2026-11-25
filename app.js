@@ -344,10 +344,13 @@ function renderDateBanner(meta) {
       : meta.fetch_complete === false
       ? ' · Some results could not be fetched; this list may be incomplete.'
       : '';
-    const hoursText = meta.excluded_local_hours === '22:00-06:00'
+    const hoursText = meta.window_hours === 16
+      ? ' · 6am–10pm local'
+      : meta.excluded_local_hours === '22:00-06:00'
       ? ' · 10pm–6am excluded to reduce API use'
       : '';
-    el.innerHTML = `<strong>Next 24 hours</strong>${rangeText}${hoursText}${partialText}`;
+    const title = meta.window_hours === 16 ? `Arrivals for ${formatTargetDate(meta.target_date)}` : 'Next 24 hours';
+    el.innerHTML = `<strong>${title}</strong>${rangeText}${hoursText}${partialText}`;
     el.title = el.textContent;
     return;
   }
