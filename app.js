@@ -86,6 +86,7 @@ let state = {
   activeTime: 'all',
   hideCommon: false,
   searchQuery: '',
+  photoLookups: new Set(),
 };
 
 // ============================================================
@@ -115,6 +116,16 @@ function formatArrivalTime(flight) {
   const t = parseLocalTime(local);
   if (!t) return '--:--';
   return `${String(t.h).padStart(2, '0')}:${String(t.m).padStart(2, '0')}`;
+}
+
+/** Format the arrival's own local calendar date (which may differ by airport). */
+function formatArrivalDate(flight) {
+  const local = flight.arrival.revised_local || flight.arrival.scheduled_local || flight.arrival.scheduled_utc;
+  if (!local) return '';
+  const match = local.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return '';
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 /**
@@ -316,6 +327,7 @@ function buildCardHTML(flight) {
   const color = RARITY_COLOR[flight.rarity] || '#64748b';
   const glow = RARITY_GLOW[flight.rarity] || 'transparent';
   const time = formatArrivalTime(flight);
+  const date = formatArrivalDate(flight);
   const statusClass = (flight.status || 'scheduled').toLowerCase();
   const hasPhoto = flight.photo && (flight.photo.url || flight.photo.thumbnail);
 
@@ -393,6 +405,7 @@ function buildCardHTML(flight) {
         <div class="card-meta-row">
           <span class="airport-badge">${esc(flight.airport)}</span>
           <span class="arrival-time">${time}<span class="time-tz">local</span></span>
+          ${date ? `<span class="arrival-date">${esc(date)}</span>` : ''}
           <span class="status-badge ${statusClass}">${esc(flight.status || 'Scheduled')}</span>
         </div>
 
@@ -449,6 +462,7 @@ function renderFlightGrid(flights) {
   empty.hidden = true;
   grid.hidden = false;
   grid.innerHTML = flights.map(f => buildCardHTML(f)).join('');
+  observeAutomaticPhotos(flights);
 }
 
 function renderModal(airports, presets) {
@@ -485,6 +499,31 @@ function renderAll() {
   renderFlightGrid(filtered);
 }
 
+// Look up photos only as cards approach the viewport, limiting unnecessary API calls.
+function observeAutomaticPhotos(flights) {
+  const missing = flights.filter(f => !(f.photo && (f.photo.url || f.photo.thumbnail)) &&
+    (f.aircraft.reg || f.aircraft.modeS) && !state.photoLookups.has(f.id));
+  if (!missing.length) return;
+
+  if (!('IntersectionObserver' in window)) {
+    missing.slice(0, 12).forEach(f => loadPhotoForCard(f.id));
+    return;
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      observer.unobserve(entry.target);
+      const flight = flights.find(f => f.id === entry.target.dataset.id);
+      if (flight) loadPhotoForCard(flight.id);
+    });
+  }, { rootMargin: '180px 0px' });
+  missing.forEach(f => {
+    const card = document.getElementById(`card-${f.id}`);
+    if (card) observer.observe(card);
+  });
+}
+
 function updateActiveRarityPills() {
   document.querySelectorAll('.rarity-pill').forEach(el => {
     el.classList.toggle('active', el.dataset.rarity === state.activeRarity);
@@ -519,6 +558,9 @@ function updateHideCommonBtn() {
 window.loadPhotoForCard = async function(flightId, btn) {
   const flight = state.flights.find(f => f.id === flightId);
   if (!flight) return;
+  if (state.photoLookups.has(flightId)) return;
+  state.photoLookups.add(flightId);
+  btn = btn || document.getElementById(`photo-${flightId}`)?.querySelector('.btn-load-photo');
 
   const reg = flight.aircraft.reg;
   const modes = flight.aircraft.modeS;
@@ -527,8 +569,10 @@ window.loadPhotoForCard = async function(flightId, btn) {
     return;
   }
 
-  btn.textContent = '⏳ Loading…';
-  btn.disabled = true;
+  if (btn) {
+    btn.textContent = '⏳ Loading…';
+    btn.disabled = true;
+  }
 
   const urls = [];
   if (reg) urls.push(`https://api.planespotters.net/pub/photos/reg/${reg.replace(/-/g, '')}`);
@@ -568,8 +612,7 @@ window.loadPhotoForCard = async function(flightId, btn) {
       }
     } catch { /* try next */ }
   }
-  showToast('📷 No photo found on Planespotters');
-  btn.textContent = 'No Photo Found';
+  if (btn) btn.textContent = 'No Photo Found';
 };
 
 window.copyPreset = function(json, name) {

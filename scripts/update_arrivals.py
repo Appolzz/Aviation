@@ -533,7 +533,8 @@ def main():
     ntfy_topic = os.environ.get("NTFY_TOPIC", "").strip()
 
     if not api_key:
-        log.warning("AERODATABOX_API_KEY not set — will produce empty arrivals file.")
+        log.error("AERODATABOX_API_KEY is not set. Add it as a GitHub Actions secret before running updates.")
+        sys.exit(1)
 
     # --- Load config ---
     airports_config = load_json(AIRPORTS_JSON, {"active": ["DCA", "IAD"], "timezone_overrides": {}, "presets": []})
@@ -570,10 +571,6 @@ def main():
         tz = get_timezone(iata, tz_overrides)
         target_date = tomorrow_date(tz)
         log.info("Fetching arrivals for %s on %s (tz: %s)", iata, target_date, tz.key)
-
-        if not api_key:
-            log.warning("Skipping %s — no API key", iata)
-            continue
 
         raw_arrivals = fetch_arrivals_for_airport(session, iata, target_date, api_key)
 

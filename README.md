@@ -12,7 +12,8 @@ Hosted on **GitHub Pages** | Updated nightly by **GitHub Actions** | Notificatio
 - **Automatic nightly updates** at 7:30 PM EST via GitHub Actions
 - **Phone push notifications** (ntfy.sh) for Rare+ flights with plane photos in the notification
 - **plane-alert-db enrichment**: auto-detects special liveries, heritage paint, alliance schemes
-- **Planespotters.net photos** for notable aircraft
+- **Automatic Planespotters.net photo lookups** as flight cards enter view, with photographer credit
+- **Arrival date beside local time** on every flight card
 - **Vacation mode**: swap airports for any trip in 30 seconds
 - **PWA ready**: add to home screen on iOS or Android
 
@@ -60,7 +61,7 @@ Add these two secrets:
 | `AERODATABOX_API_KEY` | Your RapidAPI key from Step 2 |
 | `NTFY_TOPIC` | Your chosen ntfy topic name (e.g. `lootrada-yourname-dca`) |
 
-> **Note**: If you skip `NTFY_TOPIC`, arrivals will still update — you just won't get phone notifications.
+> **Note**: `AERODATABOX_API_KEY` is required for live flight updates. If it is missing, the update stops without overwriting the current sample or live data. `NTFY_TOPIC` is optional; without it, arrivals still update but phone notifications are skipped.
 
 ---
 
