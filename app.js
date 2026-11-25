@@ -387,9 +387,10 @@ function buildCardHTML(flight) {
   const liveryCls = flight.plane_alert_match ? ` style="border-color: ${color}44; color: ${color}"` : '';
 
   // Origin display
+  const originPlace = flight.origin.city || flight.origin.name || flight.origin.iata;
   const originDisplay = flight.origin.iata
-    ? `${esc(flight.origin.iata)} (${esc(flight.origin.name || flight.origin.iata)})`
-    : (esc(flight.origin.name) || '???');
+    ? `${esc(flight.origin.iata)} (${esc(originPlace || flight.origin.iata)})`
+    : (esc(originPlace) || '???');
 
   // Aircraft display
   const icaoType = flight.aircraft.icao_type || '';
@@ -433,7 +434,7 @@ function buildCardHTML(flight) {
 
         <!-- Route -->
         <div class="card-route">
-          <span class="route-origin" title="${esc(flight.origin.name)}">${esc(flight.origin.iata || '???')}</span>
+          <span class="route-origin" title="${esc(flight.origin.name || originPlace)}">${originDisplay}</span>
           <span class="route-arrow">✈</span>
           <span class="route-dest">${esc(flight.airport)}</span>
           <span class="route-terminal">${esc(termGate)}</span>

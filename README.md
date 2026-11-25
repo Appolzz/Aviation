@@ -4,7 +4,7 @@ LootRadar is a static GitHub Pages dashboard backed by a nightly GitHub Actions 
 
 ## Cost and budget protections
 
-FlightAware lists `GET /airports/{id}/flights/scheduled_arrivals` at **$0.005 per result set** (up to 15 records). The Personal plan currently includes up to $5/month in free API credit. The pipeline stops at an internal $4.25 monthly ceiling and $0.25 per run, leaving a buffer. It also checks the no-cost `/account/usage` endpoint before any arrival query and tracks local usage in `data/api_usage_ledger.json`.
+FlightAware lists `GET /airports/{id}/flights/scheduled_arrivals` at **$0.005 per result set** (up to 15 records). The Personal plan currently includes up to $5/month in free API credit. The pipeline stops at an internal $4.25 monthly ceiling and $0.25 per run, leaving a buffer. It checks account-wide usage from the no-cost `/account/usage` endpoint before any arrival query and tracks local usage in `data/api_usage_ledger.json`.
 
 This is a conservative automatic stop, not an account-level billing lock. FlightAware says usage reporting can lag around 10 minutes; other applications using the same AeroAPI account can consume the same credit. Keep the API key private and review usage in the FlightAware portal. `force_budget_override` defaults to `false`; setting it to `true` bypasses the $0.25 per-run limit, but the $4.25 monthly ceiling still applies.
 

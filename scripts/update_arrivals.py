@@ -137,21 +137,26 @@ def account_usage_cost(payload) -> float | None:
     """Find the current period's reported cost in AeroAPI's usage response."""
     names = {"total_cost", "total_cost_usd", "cost", "cost_usd", "totalcost"}
     found = []
-    def walk(value):
+    def walk(value, depth=0):
         if isinstance(value, dict):
             for key, child in value.items():
                 if key.lower().replace("-", "_") in names:
                     try:
-                        found.append(float(str(child).replace("$", "").replace(",", "").strip()))
+                        found.append((depth, float(str(child).replace("$", "").replace(",", "").strip())))
                     except (TypeError, ValueError):
-                        walk(child)
+                        walk(child, depth + 1)
                 else:
-                    walk(child)
+                    walk(child, depth + 1)
         elif isinstance(value, list):
             for child in value:
-                walk(child)
+                walk(child, depth + 1)
     walk(payload)
-    return max(found) if found else None
+    if not found:
+        return None
+    shallowest = min(depth for depth, _ in found)
+    # Prefer the highest-level aggregate; if the API returns only grouped
+    # records, sum those peers rather than undercounting the account total.
+    return sum(value for depth, value in found if depth == shallowest)
 
 
 def current_month() -> str:
@@ -164,7 +169,11 @@ def budget_guard(session: requests.Session, headers: dict, ledger: dict) -> tupl
     entry = ledger.get(month, {})
     ledger_cost = float(entry.get("estimated_cost_usd", 0) or 0)
     start = datetime.now(timezone.utc).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    params = {"start": start.strftime("%Y-%m-%dT%H:%M:%SZ"), "end": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+    params = {
+        "start": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "end": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "all_keys": "true",
+    }
     response = session.get(f"{FLIGHTAWARE_BASE}/account/usage", headers=headers, params=params, timeout=30)
     response.raise_for_status()
     live_cost = account_usage_cost(response.json())
@@ -628,7 +637,8 @@ def main():
 
     ledger = load_json(USAGE_LEDGER_JSON, {})
     session = requests.Session()
-    session.headers.update({"User-Agent": "LootRadar/1.0", "x-apikey": api_key, "Accept": "application/json"})
+    # Keep credentials out of unrelated photo, livery-database, and ntfy requests.
+    session.headers.update({"User-Agent": "LootRadar/1.0", "Accept": "application/json"})
 
     # This no-cost usage read is first; fail closed if it errors or cannot be parsed.
     try:
