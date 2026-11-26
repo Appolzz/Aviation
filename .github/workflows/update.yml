@@ -2,10 +2,11 @@ name: Update LootRadar Arrivals
 
 on:
   schedule:
-    # GitHub cron is UTC. Two slots cover 10 PM America/New_York across DST;
-    # the guard below allows only the slot that is actually 10 PM local.
-    - cron: '0 2 * * *'
-    - cron: '0 3 * * *'
+    # Avoid :00, when GitHub scheduled runs are more likely to be delayed.
+    # These UTC slots cover 10:20 PM America/New_York across DST; the local
+    # guard below allows only the slot that is actually in the 10 PM hour.
+    - cron: '20 2 * * *'
+    - cron: '20 3 * * *'
   workflow_dispatch:
     inputs:
       force_notify:
