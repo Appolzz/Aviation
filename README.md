@@ -29,7 +29,7 @@ Airport time zones are configured in `timezone_overrides`. Each scheduled update
 
 ## Notifications, photos, and rarity
 
-- New Uncommon, Rare, Epic, Legendary, and Mythic flights can be sent to ntfy; seen flight keys older than seven days are pruned.
+- New Rare, Epic, Legendary, and Mythic flights can be sent to ntfy; Uncommon flights remain on the dashboard but do not trigger notifications. Seen flight keys older than seven days are pruned.
 - The pipeline caches Planespotters photo URLs in `data/photo_cache.json` and queries photos for up to 60 Uncommon+ aircraft each run. Common cards can load a photo in the browser.
 - `config/rarity_rules.json` contains DCA, IAD, and DEFAULT (vacation airport) profiles and model normalization rules.
 - Copa Airlines arrivals are classified Rare. Other flights are classified by aircraft type and special livery, so common regional and narrowbody aircraft stay Common regardless of operator.

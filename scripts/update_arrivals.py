@@ -63,7 +63,7 @@ PLANESPOTTERS_HEX = "https://api.planespotters.net/pub/photos/hex/{hex}"
 NTFY_BASE = "https://ntfy.sh/{topic}"
 
 RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"]
-NOTIFY_RARITIES = {"Uncommon", "Rare", "Epic", "Legendary", "Mythic"}
+NOTIFY_RARITIES = {"Rare", "Epic", "Legendary", "Mythic"}
 
 RARITY_COLORS = {
     "Common": "#64748b",
