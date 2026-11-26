@@ -19,7 +19,7 @@ The workflow asks for one result set at a time (`max_pages=1`) and follows every
 5. Add `FLIGHTAWARE_API_KEY` and paste the key into its secret value.
 6. Optionally add `NTFY_TOPIC` for phone notifications. Create a private/unpredictable topic name in ntfy and subscribe to it in the ntfy app.
 7. In **Settings → Pages**, choose **Deploy from a branch**, branch `main`, folder `/ (root)`.
-8. In **Actions**, select **Update LootRadar Arrivals** and run it once. Later runs occur automatically at 10:20 p.m. America/New_York time every day. The workflow uses UTC schedules with a local-time guard to handle daylight saving time and avoids GitHub's busier top-of-hour scheduling minute.
+8. In **Actions**, select **Update LootRadar Arrivals** and run it once. Later runs check for fresh data every 10 minutes from 10 p.m. through 11 p.m. America/New_York time. The workflow uses UTC schedules with a local-time guard to handle daylight saving time, avoids GitHub's busier top-of-hour minute, and skips repeat fetches once tomorrow's data is complete.
 
 ## Change airports
 
