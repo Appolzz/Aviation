@@ -563,8 +563,6 @@ code, .mono {
   margin-top: 14px;
 }
 
-.mobile-scrollbar { display: none; }
-
 /* Loading state */
 .loading-state {
   display: flex;
@@ -1371,16 +1369,20 @@ body {
 .filter-menu-toggle { display: none; }
 @media (max-width: 600px) {
   html, body { width: 100%; max-width: 100%; overflow-x: clip; }
-  .filter-section { top: 86px; position: sticky; z-index: 90; padding: 8px 10px; }
-  body.filters-peek .app-header { transform: translateY(-100%); z-index: 80; }
-  body.filters-peek .filter-section {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
+  .filter-section {
+    top: 86px;
+    position: sticky;
+    z-index: 90;
+    padding: 8px 10px;
+    transform: translateY(0);
+    transition: transform .24s var(--ease-out), visibility 0s;
   }
-  .app-header { transition: transform .18s ease; }
+  body.filters-hidden .filter-section {
+    transform: translateY(calc(-100% - 1px));
+    visibility: hidden;
+    pointer-events: none;
+    transition-delay: 0s, .24s;
+  }
   .filter-inner { padding: 0; gap: 0; min-width: 0; }
   .filter-menu-toggle {
     display: flex;
@@ -1418,40 +1420,6 @@ body {
   .landed-gate-message { align-items: flex-start; flex-direction: column; }
   .btn-show-landed { width: 100%; }
   .landed-flight-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .mobile-scrollbar {
-    position: fixed;
-    z-index: 110;
-    top: 28vh;
-    right: 0;
-    display: block;
-    width: 24px;
-    height: 44vh;
-    min-height: 120px;
-    touch-action: none;
-    cursor: grab;
-  }
-  .mobile-scrollbar[hidden] { display: none; }
-  .mobile-scrollbar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 8px;
-    width: 4px;
-    border-radius: 4px;
-    background: rgba(139,148,158,.24);
-  }
-  .mobile-scrollbar-thumb {
-    position: absolute;
-    top: 0;
-    right: 5px;
-    width: 10px;
-    height: 36px;
-    border-radius: 8px;
-    background: rgba(139,148,158,.82);
-    box-shadow: 0 1px 5px rgba(0,0,0,.45);
-  }
-  .mobile-scrollbar:active { cursor: grabbing; }
 }
 
 /* Animated card entrance stagger */

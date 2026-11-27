@@ -567,7 +567,6 @@ function renderFlightGrid(flights) {
   if (flights.length === 0) {
     grid.hidden = true;
     empty.hidden = false;
-    updateMobileScrollbar();
     return;
   }
 
@@ -589,7 +588,6 @@ function renderFlightGrid(flights) {
   grid.innerHTML = `${active.map(flight => buildCardHTML(flight)).join('')}${landedGate}`;
   observeAutomaticPhotos(active.concat(state.showLanded ? landed : []));
   updateScrollHour();
-  updateMobileScrollbar();
 }
 
 function updateScrollHour() {
@@ -634,28 +632,6 @@ async function fetchJSONWithRetry(url, attempts = 3) {
     }
   }
   throw lastError;
-}
-
-function updateMobileScrollbar() {
-  const scrollbar = document.getElementById('mobile-scrollbar');
-  if (!scrollbar) return;
-  const thumb = scrollbar.querySelector('.mobile-scrollbar-thumb');
-  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-  scrollbar.hidden = maxScroll <= 0;
-  if (maxScroll <= 0) return;
-  const travel = scrollbar.clientHeight - thumb.offsetHeight;
-  const progress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
-  thumb.style.transform = `translateY(${travel * progress}px)`;
-  scrollbar.setAttribute('aria-valuenow', String(Math.round(progress * 100)));
-}
-
-function setScrollFromPointer(event) {
-  const scrollbar = document.getElementById('mobile-scrollbar');
-  const thumb = scrollbar.querySelector('.mobile-scrollbar-thumb');
-  const travel = scrollbar.clientHeight - thumb.offsetHeight;
-  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-  const progress = Math.min(1, Math.max(0, (event.clientY - scrollbar.getBoundingClientRect().top - thumb.offsetHeight / 2) / travel));
-  window.scrollTo({ top: progress * maxScroll, behavior: 'instant' });
 }
 
 function renderModal(airports, presets) {
@@ -921,33 +897,6 @@ function attachEventListeners() {
     renderAll();
   });
 
-  const mobileScrollbar = document.getElementById('mobile-scrollbar');
-  let draggingScrollbar = false;
-  mobileScrollbar.addEventListener('pointerdown', event => {
-    draggingScrollbar = true;
-    mobileScrollbar.setPointerCapture(event.pointerId);
-    setScrollFromPointer(event);
-    event.preventDefault();
-  });
-  mobileScrollbar.addEventListener('pointermove', event => {
-    if (draggingScrollbar) setScrollFromPointer(event);
-  });
-  mobileScrollbar.addEventListener('pointerup', () => { draggingScrollbar = false; });
-  mobileScrollbar.addEventListener('pointercancel', () => { draggingScrollbar = false; });
-  mobileScrollbar.addEventListener('keydown', event => {
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    const current = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-    const step = event.key === 'PageDown' || event.key === 'PageUp' ? 0.2 : 0.05;
-    const next = event.key === 'Home' ? 0
-      : event.key === 'End' ? 1
-      : event.key === 'ArrowDown' || event.key === 'PageDown' ? current + step
-      : event.key === 'ArrowUp' || event.key === 'PageUp' ? current - step
-      : null;
-    if (next === null) return;
-    event.preventDefault();
-    window.scrollTo({ top: Math.min(maxScroll, Math.max(0, next * maxScroll)), behavior: 'instant' });
-  });
-
   // Rarity pills
   document.querySelectorAll('.rarity-pill').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1015,22 +964,41 @@ document.addEventListener('DOMContentLoaded', () => {
   attachEventListeners();
   loadData();
   let scrollFrame = 0;
+  let filtersHideTimer = 0;
   let previousScrollY = window.scrollY;
   window.addEventListener('scroll', () => {
     const currentY = window.scrollY;
     if (window.innerWidth <= 600) {
-      document.body.classList.toggle('filters-peek', currentY < previousScrollY - 2 && currentY > 24);
+      if (currentY <= 24) {
+        window.clearTimeout(filtersHideTimer);
+        document.body.classList.remove('filters-hidden');
+      } else if (currentY < previousScrollY - 2) {
+        window.clearTimeout(filtersHideTimer);
+        document.body.classList.remove('filters-hidden');
+        filtersHideTimer = window.setTimeout(() => {
+          if (window.innerWidth <= 600 && window.scrollY > 24) {
+            document.body.classList.add('filters-hidden');
+          }
+        }, 1000);
+      } else if (currentY > previousScrollY + 2) {
+        window.clearTimeout(filtersHideTimer);
+        document.body.classList.add('filters-hidden');
+      }
     } else {
-      document.body.classList.remove('filters-peek');
+      window.clearTimeout(filtersHideTimer);
+      document.body.classList.remove('filters-hidden');
     }
     previousScrollY = currentY;
     if (scrollFrame) return;
     scrollFrame = requestAnimationFrame(() => {
       scrollFrame = 0;
       updateScrollHour();
-      updateMobileScrollbar();
     });
   }, { passive: true });
-  window.addEventListener('resize', updateMobileScrollbar);
-  updateMobileScrollbar();
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 600) {
+      window.clearTimeout(filtersHideTimer);
+      document.body.classList.remove('filters-hidden');
+    }
+  });
 });
