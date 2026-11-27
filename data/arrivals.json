@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated": "2026-11-27T05:12:04.611798+00:00",
+    "generated": "2026-11-27T05:31:15.076532+00:00",
     "target_date": "2026-11-28",
     "airports": [
       "DCA",
@@ -27,17 +27,17 @@
       "Legendary": 0,
       "Mythic": 0
     },
-    "last_updated_utc": "2026-11-27T05:12:04.611798+00:00",
-    "last_updated_local": "2026-11-27T00:12:04.611863-05:00",
+    "last_updated_utc": "2026-11-27T05:31:15.076532+00:00",
+    "last_updated_local": "2026-11-27T00:31:15.076584-05:00",
     "is_sample_data": false,
     "source": "FlightAware AeroAPI v4",
     "fetch_complete": true,
     "budget": {
       "month": "2026-11",
-      "estimated_cost_usd": 1.29,
+      "estimated_cost_usd": 1.52,
       "monthly_cap_usd": 4.25,
       "free_credit_usd": 5.0,
-      "result_sets_used": 258,
+      "result_sets_used": 304,
       "rate": "estimate; FlightAware usage can lag"
     }
   },
@@ -2023,7 +2023,7 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/oh5480"
     },
     {
-      "id": "2026-11-28_IAD_OO5031_N506CA",
+      "id": "2026-11-28_IAD_OO5031_N918SW",
       "airport": "IAD",
       "flight_number": "OO5031",
       "airline": {
@@ -2045,7 +2045,7 @@
         "gate": null
       },
       "aircraft": {
-        "reg": "N506CA",
+        "reg": "N918SW",
         "modeS": null,
         "model": "CRJ2",
         "icao_type": "CRJ2"
@@ -2199,50 +2199,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/oo5046"
     },
     {
-      "id": "2026-11-28_IAD_YX3660_N744YX",
-      "airport": "IAD",
-      "flight_number": "YX3660",
-      "airline": {
-        "name": "RPA",
-        "iata": "YX",
-        "icao": "RPA"
-      },
-      "origin": {
-        "iata": "SDF",
-        "icao": "KSDF",
-        "name": "Muhammad Ali Intl",
-        "city": "Louisville"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T07:35:00-05:00",
-        "scheduled_utc": "2026-11-28T12:35:00Z",
-        "revised_local": null,
-        "terminal": null,
-        "gate": null
-      },
-      "aircraft": {
-        "reg": "N744YX",
-        "modeS": null,
-        "model": "E75L",
-        "icao_type": "E75L"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard IAD Domestic / Regional Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/yx3660"
-    },
-    {
       "id": "2026-11-28_IAD_YX3496_N726YX",
       "airport": "IAD",
       "flight_number": "YX3496",
@@ -2285,6 +2241,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/yx3496"
+    },
+    {
+      "id": "2026-11-28_IAD_YX3660_N744YX",
+      "airport": "IAD",
+      "flight_number": "YX3660",
+      "airline": {
+        "name": "RPA",
+        "iata": "YX",
+        "icao": "RPA"
+      },
+      "origin": {
+        "iata": "SDF",
+        "icao": "KSDF",
+        "name": "Muhammad Ali Intl",
+        "city": "Louisville"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T07:35:00-05:00",
+        "scheduled_utc": "2026-11-28T12:35:00Z",
+        "revised_local": null,
+        "terminal": null,
+        "gate": null
+      },
+      "aircraft": {
+        "reg": "N744YX",
+        "modeS": null,
+        "model": "E75L",
+        "icao_type": "E75L"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard IAD Domestic / Regional Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/yx3660"
     },
     {
       "id": "2026-11-28_DCA_YX4674_NOREG",
@@ -2350,7 +2350,7 @@
         "scheduled_utc": "2026-11-28T12:39:00Z",
         "revised_local": null,
         "terminal": "2",
-        "gate": null
+        "gate": "D39"
       },
       "aircraft": {
         "reg": "N802AW",
@@ -2419,6 +2419,50 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/yx5687"
     },
     {
+      "id": "2026-11-28_DCA_OH5603_NOREG",
+      "airport": "DCA",
+      "flight_number": "OH5603",
+      "airline": {
+        "name": "JIA",
+        "iata": "OH",
+        "icao": "JIA"
+      },
+      "origin": {
+        "iata": "CAE",
+        "icao": "KCAE",
+        "name": "Columbia Metro",
+        "city": "Columbia"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T07:47:00-05:00",
+        "scheduled_utc": "2026-11-28T12:47:00Z",
+        "revised_local": null,
+        "terminal": "2",
+        "gate": "E57"
+      },
+      "aircraft": {
+        "reg": null,
+        "modeS": null,
+        "model": "CRJ7",
+        "icao_type": "CRJ7"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/oh5603"
+    },
+    {
       "id": "2026-11-28_DCA_OH5445_NOREG",
       "airport": "DCA",
       "flight_number": "OH5445",
@@ -2461,50 +2505,6 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/oh5445"
-    },
-    {
-      "id": "2026-11-28_DCA_OH5603_NOREG",
-      "airport": "DCA",
-      "flight_number": "OH5603",
-      "airline": {
-        "name": "JIA",
-        "iata": "OH",
-        "icao": "JIA"
-      },
-      "origin": {
-        "iata": "CAE",
-        "icao": "KCAE",
-        "name": "Columbia Metro",
-        "city": "Columbia"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T07:47:00-05:00",
-        "scheduled_utc": "2026-11-28T12:47:00Z",
-        "revised_local": null,
-        "terminal": null,
-        "gate": null
-      },
-      "aircraft": {
-        "reg": null,
-        "modeS": null,
-        "model": "CRJ7",
-        "icao_type": "CRJ7"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard DCA Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/oh5603"
     },
     {
       "id": "2026-11-28_DCA_YX4549_NOREG",
@@ -2745,8 +2745,8 @@
         "scheduled_local": "2026-11-28T07:59:00-05:00",
         "scheduled_utc": "2026-11-28T12:59:00Z",
         "revised_local": null,
-        "terminal": null,
-        "gate": null
+        "terminal": "2",
+        "gate": "C25"
       },
       "aircraft": {
         "reg": null,
@@ -2921,8 +2921,8 @@
         "scheduled_local": "2026-11-28T08:08:00-05:00",
         "scheduled_utc": "2026-11-28T13:08:00Z",
         "revised_local": null,
-        "terminal": null,
-        "gate": null
+        "terminal": "2",
+        "gate": "E53"
       },
       "aircraft": {
         "reg": null,
@@ -2965,8 +2965,8 @@
         "scheduled_local": "2026-11-28T08:12:00-05:00",
         "scheduled_utc": "2026-11-28T13:12:00Z",
         "revised_local": null,
-        "terminal": null,
-        "gate": null
+        "terminal": "2",
+        "gate": "D44B"
       },
       "aircraft": {
         "reg": null,
@@ -3009,8 +3009,8 @@
         "scheduled_local": "2026-11-28T08:14:00-05:00",
         "scheduled_utc": "2026-11-28T13:14:00Z",
         "revised_local": null,
-        "terminal": null,
-        "gate": null
+        "terminal": "2",
+        "gate": "E55"
       },
       "aircraft": {
         "reg": null,
@@ -3141,8 +3141,8 @@
         "scheduled_local": "2026-11-28T08:23:00-05:00",
         "scheduled_utc": "2026-11-28T13:23:00Z",
         "revised_local": null,
-        "terminal": null,
-        "gate": null
+        "terminal": "2",
+        "gate": "D37"
       },
       "aircraft": {
         "reg": null,
@@ -3802,7 +3802,7 @@
         "scheduled_utc": "2026-11-28T14:00:00Z",
         "revised_local": null,
         "terminal": "2",
-        "gate": null
+        "gate": "C27"
       },
       "aircraft": {
         "reg": "N358PW",
@@ -4241,8 +4241,8 @@
         "scheduled_local": "2026-11-28T09:10:00-05:00",
         "scheduled_utc": "2026-11-28T14:10:00Z",
         "revised_local": null,
-        "terminal": null,
-        "gate": null
+        "terminal": "2",
+        "gate": "E57"
       },
       "aircraft": {
         "reg": null,
@@ -6027,50 +6027,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/9e5517"
     },
     {
-      "id": "2026-11-28_DCA_AA1846_N837NN",
-      "airport": "DCA",
-      "flight_number": "AA1846",
-      "airline": {
-        "name": "AAL",
-        "iata": "AA",
-        "icao": "AAL"
-      },
-      "origin": {
-        "iata": "DFW",
-        "icao": "KDFW",
-        "name": "Dallas-Fort Worth Intl",
-        "city": "Dallas-Fort Worth"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T10:59:00-05:00",
-        "scheduled_utc": "2026-11-28T15:59:00Z",
-        "revised_local": null,
-        "terminal": "2",
-        "gate": null
-      },
-      "aircraft": {
-        "reg": "N837NN",
-        "modeS": null,
-        "model": "B738",
-        "icao_type": "B738"
-      },
-      "rarity": "Rare",
-      "rarity_reason": "American Airlines oneworld",
-      "rarity_color": "#3b82f6",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/aa1846"
-    },
-    {
       "id": "2026-11-28_DCA_AA1718_N833AW",
       "airport": "DCA",
       "flight_number": "AA1718",
@@ -6113,6 +6069,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/aa1718"
+    },
+    {
+      "id": "2026-11-28_DCA_AA1846_N837NN",
+      "airport": "DCA",
+      "flight_number": "AA1846",
+      "airline": {
+        "name": "AAL",
+        "iata": "AA",
+        "icao": "AAL"
+      },
+      "origin": {
+        "iata": "DFW",
+        "icao": "KDFW",
+        "name": "Dallas-Fort Worth Intl",
+        "city": "Dallas-Fort Worth"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T10:59:00-05:00",
+        "scheduled_utc": "2026-11-28T15:59:00Z",
+        "revised_local": null,
+        "terminal": "2",
+        "gate": null
+      },
+      "aircraft": {
+        "reg": "N837NN",
+        "modeS": null,
+        "model": "B738",
+        "icao_type": "B738"
+      },
+      "rarity": "Rare",
+      "rarity_reason": "American Airlines oneworld",
+      "rarity_color": "#3b82f6",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/aa1846"
     },
     {
       "id": "2026-11-28_DCA_WN210_NOREG",
@@ -10823,50 +10823,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/oh5388"
     },
     {
-      "id": "2026-11-28_DCA_YX4465_NOREG",
-      "airport": "DCA",
-      "flight_number": "YX4465",
-      "airline": {
-        "name": "RPA",
-        "iata": "YX",
-        "icao": "RPA"
-      },
-      "origin": {
-        "iata": "IND",
-        "icao": "KIND",
-        "name": "Indianapolis Intl",
-        "city": "Indianapolis"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T12:59:00-05:00",
-        "scheduled_utc": "2026-11-28T17:59:00Z",
-        "revised_local": null,
-        "terminal": null,
-        "gate": null
-      },
-      "aircraft": {
-        "reg": null,
-        "modeS": null,
-        "model": "E75L",
-        "icao_type": "E75L"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard DCA Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/yx4465"
-    },
-    {
       "id": "2026-11-28_DCA_MQ4328_N221NN",
       "airport": "DCA",
       "flight_number": "MQ4328",
@@ -10909,6 +10865,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/mq4328"
+    },
+    {
+      "id": "2026-11-28_DCA_YX4465_NOREG",
+      "airport": "DCA",
+      "flight_number": "YX4465",
+      "airline": {
+        "name": "RPA",
+        "iata": "YX",
+        "icao": "RPA"
+      },
+      "origin": {
+        "iata": "IND",
+        "icao": "KIND",
+        "name": "Indianapolis Intl",
+        "city": "Indianapolis"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T12:59:00-05:00",
+        "scheduled_utc": "2026-11-28T17:59:00Z",
+        "revised_local": null,
+        "terminal": null,
+        "gate": null
+      },
+      "aircraft": {
+        "reg": null,
+        "modeS": null,
+        "model": "E75L",
+        "icao_type": "E75L"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/yx4465"
     },
     {
       "id": "2026-11-28_DCA_F9686_N432FR",
@@ -11263,50 +11263,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/aa1767"
     },
     {
-      "id": "2026-11-28_DCA_OH5327_NOREG",
-      "airport": "DCA",
-      "flight_number": "OH5327",
-      "airline": {
-        "name": "JIA",
-        "iata": "OH",
-        "icao": "JIA"
-      },
-      "origin": {
-        "iata": "SYR",
-        "icao": "KSYR",
-        "name": "Syracuse Hancock Intl",
-        "city": "Syracuse"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T13:17:00-05:00",
-        "scheduled_utc": "2026-11-28T18:17:00Z",
-        "revised_local": null,
-        "terminal": "2",
-        "gate": null
-      },
-      "aircraft": {
-        "reg": null,
-        "modeS": null,
-        "model": "CRJ7",
-        "icao_type": "CRJ7"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard DCA Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/oh5327"
-    },
-    {
       "id": "2026-11-28_DCA_OH5328_NOREG",
       "airport": "DCA",
       "flight_number": "OH5328",
@@ -11349,6 +11305,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/oh5328"
+    },
+    {
+      "id": "2026-11-28_DCA_OH5327_NOREG",
+      "airport": "DCA",
+      "flight_number": "OH5327",
+      "airline": {
+        "name": "JIA",
+        "iata": "OH",
+        "icao": "JIA"
+      },
+      "origin": {
+        "iata": "SYR",
+        "icao": "KSYR",
+        "name": "Syracuse Hancock Intl",
+        "city": "Syracuse"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T13:17:00-05:00",
+        "scheduled_utc": "2026-11-28T18:17:00Z",
+        "revised_local": null,
+        "terminal": "2",
+        "gate": null
+      },
+      "aircraft": {
+        "reg": null,
+        "modeS": null,
+        "model": "CRJ7",
+        "icao_type": "CRJ7"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/oh5327"
     },
     {
       "id": "2026-11-28_DCA_OH5170_NOREG",
@@ -12055,6 +12055,50 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/sv35"
     },
     {
+      "id": "2026-11-28_IAD_DL2135_N361NW",
+      "airport": "IAD",
+      "flight_number": "DL2135",
+      "airline": {
+        "name": "DAL",
+        "iata": "DL",
+        "icao": "DAL"
+      },
+      "origin": {
+        "iata": "ATL",
+        "icao": "KATL",
+        "name": "Hartsfield-Jackson Intl",
+        "city": "Atlanta"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T13:54:00-05:00",
+        "scheduled_utc": "2026-11-28T18:54:00Z",
+        "revised_local": "2026-11-28T13:52:00-05:00",
+        "terminal": null,
+        "gate": null
+      },
+      "aircraft": {
+        "reg": "N361NW",
+        "modeS": null,
+        "model": "A320",
+        "icao_type": "A320"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard IAD Domestic / Regional Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/dl2135"
+    },
+    {
       "id": "2026-11-28_DCA_DL2983_N342NB",
       "airport": "DCA",
       "flight_number": "DL2983",
@@ -12141,50 +12185,6 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/yx4700"
-    },
-    {
-      "id": "2026-11-28_IAD_DL2135_N361NW",
-      "airport": "IAD",
-      "flight_number": "DL2135",
-      "airline": {
-        "name": "DAL",
-        "iata": "DL",
-        "icao": "DAL"
-      },
-      "origin": {
-        "iata": "ATL",
-        "icao": "KATL",
-        "name": "Hartsfield-Jackson Intl",
-        "city": "Atlanta"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T13:54:00-05:00",
-        "scheduled_utc": "2026-11-28T18:54:00Z",
-        "revised_local": null,
-        "terminal": null,
-        "gate": null
-      },
-      "aircraft": {
-        "reg": "N361NW",
-        "modeS": null,
-        "model": "A320",
-        "icao_type": "A320"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard IAD Domestic / Regional Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/dl2135"
     },
     {
       "id": "2026-11-28_DCA_OH5081_NOREG",
@@ -12363,50 +12363,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/cm443"
     },
     {
-      "id": "2026-11-28_DCA_OH5192_NOREG",
-      "airport": "DCA",
-      "flight_number": "OH5192",
-      "airline": {
-        "name": "JIA",
-        "iata": "OH",
-        "icao": "JIA"
-      },
-      "origin": {
-        "iata": "DAY",
-        "icao": "KDAY",
-        "name": "James M Cox Dayton Intl",
-        "city": "Dayton"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T13:59:00-05:00",
-        "scheduled_utc": "2026-11-28T18:59:00Z",
-        "revised_local": null,
-        "terminal": null,
-        "gate": null
-      },
-      "aircraft": {
-        "reg": null,
-        "modeS": null,
-        "model": "CRJ7",
-        "icao_type": "CRJ7"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard DCA Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/oh5192"
-    },
-    {
       "id": "2026-11-28_DCA_OH5186_NOREG",
       "airport": "DCA",
       "flight_number": "OH5186",
@@ -12449,6 +12405,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/oh5186"
+    },
+    {
+      "id": "2026-11-28_DCA_OH5192_NOREG",
+      "airport": "DCA",
+      "flight_number": "OH5192",
+      "airline": {
+        "name": "JIA",
+        "iata": "OH",
+        "icao": "JIA"
+      },
+      "origin": {
+        "iata": "DAY",
+        "icao": "KDAY",
+        "name": "James M Cox Dayton Intl",
+        "city": "Dayton"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T13:59:00-05:00",
+        "scheduled_utc": "2026-11-28T18:59:00Z",
+        "revised_local": null,
+        "terminal": null,
+        "gate": null
+      },
+      "aircraft": {
+        "reg": null,
+        "modeS": null,
+        "model": "CRJ7",
+        "icao_type": "CRJ7"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/oh5192"
     },
     {
       "id": "2026-11-28_DCA_DL2888_N328NB",
@@ -13111,50 +13111,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/oh5087"
     },
     {
-      "id": "2026-11-28_DCA_OH5425_NOREG",
-      "airport": "DCA",
-      "flight_number": "OH5425",
-      "airline": {
-        "name": "JIA",
-        "iata": "OH",
-        "icao": "JIA"
-      },
-      "origin": {
-        "iata": "YYZ",
-        "icao": "CYYZ",
-        "name": "Lester B Pearson Intl",
-        "city": "Toronto"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T14:19:00-05:00",
-        "scheduled_utc": "2026-11-28T19:19:00Z",
-        "revised_local": null,
-        "terminal": "2",
-        "gate": null
-      },
-      "aircraft": {
-        "reg": null,
-        "modeS": null,
-        "model": "CRJ7",
-        "icao_type": "CRJ7"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard DCA Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/oh5425"
-    },
-    {
       "id": "2026-11-28_DCA_OH5647_NOREG",
       "airport": "DCA",
       "flight_number": "OH5647",
@@ -13197,6 +13153,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/oh5647"
+    },
+    {
+      "id": "2026-11-28_DCA_OH5425_NOREG",
+      "airport": "DCA",
+      "flight_number": "OH5425",
+      "airline": {
+        "name": "JIA",
+        "iata": "OH",
+        "icao": "JIA"
+      },
+      "origin": {
+        "iata": "YYZ",
+        "icao": "CYYZ",
+        "name": "Lester B Pearson Intl",
+        "city": "Toronto"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T14:19:00-05:00",
+        "scheduled_utc": "2026-11-28T19:19:00Z",
+        "revised_local": null,
+        "terminal": "2",
+        "gate": null
+      },
+      "aircraft": {
+        "reg": null,
+        "modeS": null,
+        "model": "CRJ7",
+        "icao_type": "CRJ7"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/oh5425"
     },
     {
       "id": "2026-11-28_DCA_YX4436_NOREG",
@@ -16807,50 +16807,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/wn2152"
     },
     {
-      "id": "2026-11-28_DCA_AA789_N303UE",
-      "airport": "DCA",
-      "flight_number": "AA789",
-      "airline": {
-        "name": "AAL",
-        "iata": "AA",
-        "icao": "AAL"
-      },
-      "origin": {
-        "iata": "PHX",
-        "icao": "KPHX",
-        "name": "Phoenix Sky Harbor Intl",
-        "city": "Phoenix"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T16:00:00-05:00",
-        "scheduled_utc": "2026-11-28T21:00:00Z",
-        "revised_local": null,
-        "terminal": "2",
-        "gate": null
-      },
-      "aircraft": {
-        "reg": "N303UE",
-        "modeS": null,
-        "model": "B38M",
-        "icao_type": "B38M"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard DCA Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/aa789"
-    },
-    {
       "id": "2026-11-28_DCA_AA830_N308UK",
       "airport": "DCA",
       "flight_number": "AA830",
@@ -16893,6 +16849,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/aa830"
+    },
+    {
+      "id": "2026-11-28_DCA_AA789_N303UE",
+      "airport": "DCA",
+      "flight_number": "AA789",
+      "airline": {
+        "name": "AAL",
+        "iata": "AA",
+        "icao": "AAL"
+      },
+      "origin": {
+        "iata": "PHX",
+        "icao": "KPHX",
+        "name": "Phoenix Sky Harbor Intl",
+        "city": "Phoenix"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T16:00:00-05:00",
+        "scheduled_utc": "2026-11-28T21:00:00Z",
+        "revised_local": null,
+        "terminal": "2",
+        "gate": null
+      },
+      "aircraft": {
+        "reg": "N303UE",
+        "modeS": null,
+        "model": "B38M",
+        "icao_type": "B38M"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/aa789"
     },
     {
       "id": "2026-11-28_DCA_WN3125_NOREG",
@@ -22879,50 +22879,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/aa612"
     },
     {
-      "id": "2026-11-28_DCA_OH5399_NOREG",
-      "airport": "DCA",
-      "flight_number": "OH5399",
-      "airline": {
-        "name": "JIA",
-        "iata": "OH",
-        "icao": "JIA"
-      },
-      "origin": {
-        "iata": "BTV",
-        "icao": "KBTV",
-        "name": "Patrick Leahy Burlington Intl",
-        "city": "Burlington"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T18:59:00-05:00",
-        "scheduled_utc": "2026-11-28T23:59:00Z",
-        "revised_local": null,
-        "terminal": null,
-        "gate": null
-      },
-      "aircraft": {
-        "reg": null,
-        "modeS": null,
-        "model": "CRJ9",
-        "icao_type": "CRJ9"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard DCA Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/oh5399"
-    },
-    {
       "id": "2026-11-28_DCA_OH5588_NOREG",
       "airport": "DCA",
       "flight_number": "OH5588",
@@ -22965,6 +22921,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/oh5588"
+    },
+    {
+      "id": "2026-11-28_DCA_OH5399_NOREG",
+      "airport": "DCA",
+      "flight_number": "OH5399",
+      "airline": {
+        "name": "JIA",
+        "iata": "OH",
+        "icao": "JIA"
+      },
+      "origin": {
+        "iata": "BTV",
+        "icao": "KBTV",
+        "name": "Patrick Leahy Burlington Intl",
+        "city": "Burlington"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T18:59:00-05:00",
+        "scheduled_utc": "2026-11-28T23:59:00Z",
+        "revised_local": null,
+        "terminal": null,
+        "gate": null
+      },
+      "aircraft": {
+        "reg": null,
+        "modeS": null,
+        "model": "CRJ9",
+        "icao_type": "CRJ9"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/oh5399"
     },
     {
       "id": "2026-11-28_DCA_AA3008_N904NN",
@@ -26443,50 +26443,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/aa1218"
     },
     {
-      "id": "2026-11-28_DCA_OH5654_NOREG",
-      "airport": "DCA",
-      "flight_number": "OH5654",
-      "airline": {
-        "name": "JIA",
-        "iata": "OH",
-        "icao": "JIA"
-      },
-      "origin": {
-        "iata": "BHM",
-        "icao": "KBHM",
-        "name": "Birmingham-Shuttlesworth Intl",
-        "city": "Birmingham"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T21:00:00-05:00",
-        "scheduled_utc": "2026-11-29T02:00:00Z",
-        "revised_local": null,
-        "terminal": null,
-        "gate": null
-      },
-      "aircraft": {
-        "reg": null,
-        "modeS": null,
-        "model": "CRJ7",
-        "icao_type": "CRJ7"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard DCA Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/oh5654"
-    },
-    {
       "id": "2026-11-28_DCA_OH5469_NOREG",
       "airport": "DCA",
       "flight_number": "OH5469",
@@ -26529,6 +26485,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/oh5469"
+    },
+    {
+      "id": "2026-11-28_DCA_OH5654_NOREG",
+      "airport": "DCA",
+      "flight_number": "OH5654",
+      "airline": {
+        "name": "JIA",
+        "iata": "OH",
+        "icao": "JIA"
+      },
+      "origin": {
+        "iata": "BHM",
+        "icao": "KBHM",
+        "name": "Birmingham-Shuttlesworth Intl",
+        "city": "Birmingham"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T21:00:00-05:00",
+        "scheduled_utc": "2026-11-29T02:00:00Z",
+        "revised_local": null,
+        "terminal": null,
+        "gate": null
+      },
+      "aircraft": {
+        "reg": null,
+        "modeS": null,
+        "model": "CRJ7",
+        "icao_type": "CRJ7"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard DCA Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/oh5654"
     },
     {
       "id": "2026-11-28_DCA_AA2743_N406AN",
@@ -27543,50 +27543,6 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/yv6255"
     },
     {
-      "id": "2026-11-28_IAD_C54853_NOREG",
-      "airport": "IAD",
-      "flight_number": "C54853",
-      "airline": {
-        "name": "UCA",
-        "iata": "C5",
-        "icao": "UCA"
-      },
-      "origin": {
-        "iata": "SYR",
-        "icao": "KSYR",
-        "name": "Syracuse Hancock Intl",
-        "city": "Syracuse"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T21:16:00-05:00",
-        "scheduled_utc": "2026-11-29T02:16:00Z",
-        "revised_local": null,
-        "terminal": null,
-        "gate": null
-      },
-      "aircraft": {
-        "reg": null,
-        "modeS": null,
-        "model": "E135",
-        "icao_type": "E135"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard IAD Domestic / Regional Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/c54853"
-    },
-    {
       "id": "2026-11-28_IAD_C54866_NOREG",
       "airport": "IAD",
       "flight_number": "C54866",
@@ -27629,6 +27585,50 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/c54866"
+    },
+    {
+      "id": "2026-11-28_IAD_C54853_NOREG",
+      "airport": "IAD",
+      "flight_number": "C54853",
+      "airline": {
+        "name": "UCA",
+        "iata": "C5",
+        "icao": "UCA"
+      },
+      "origin": {
+        "iata": "SYR",
+        "icao": "KSYR",
+        "name": "Syracuse Hancock Intl",
+        "city": "Syracuse"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T21:16:00-05:00",
+        "scheduled_utc": "2026-11-29T02:16:00Z",
+        "revised_local": null,
+        "terminal": null,
+        "gate": null
+      },
+      "aircraft": {
+        "reg": null,
+        "modeS": null,
+        "model": "E135",
+        "icao_type": "E135"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard IAD Domestic / Regional Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/c54853"
     },
     {
       "id": "2026-11-28_IAD_UA495_N37287",
@@ -28335,7 +28335,7 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/yx3687"
     },
     {
-      "id": "2026-11-28_IAD_UA1648_N27568",
+      "id": "2026-11-28_IAD_UA1648_N37521",
       "airport": "IAD",
       "flight_number": "UA1648",
       "airline": {
@@ -28357,7 +28357,7 @@
         "gate": null
       },
       "aircraft": {
-        "reg": "N27568",
+        "reg": "N37521",
         "modeS": null,
         "model": "B39M",
         "icao_type": "B39M"
@@ -28599,6 +28599,50 @@
       "fr24_url": "https://www.flightradar24.com/data/flights/ua1574"
     },
     {
+      "id": "2026-11-28_IAD_C54259_NOREG",
+      "airport": "IAD",
+      "flight_number": "C54259",
+      "airline": {
+        "name": "UCA",
+        "iata": "C5",
+        "icao": "UCA"
+      },
+      "origin": {
+        "iata": "CAE",
+        "icao": "KCAE",
+        "name": "Columbia Metro",
+        "city": "Columbia"
+      },
+      "arrival": {
+        "scheduled_local": "2026-11-28T21:30:00-05:00",
+        "scheduled_utc": "2026-11-29T02:30:00Z",
+        "revised_local": null,
+        "terminal": null,
+        "gate": null
+      },
+      "aircraft": {
+        "reg": null,
+        "modeS": null,
+        "model": "E135",
+        "icao_type": "E135"
+      },
+      "rarity": "Common",
+      "rarity_reason": "Standard IAD Domestic / Regional Traffic",
+      "rarity_color": "#64748b",
+      "livery_or_note": null,
+      "plane_alert_match": false,
+      "plane_alert_category": null,
+      "plane_alert_tags": [],
+      "photo": {
+        "url": null,
+        "thumbnail": null,
+        "link": null,
+        "photographer": null
+      },
+      "status": "Scheduled",
+      "fr24_url": "https://www.flightradar24.com/data/flights/c54259"
+    },
+    {
       "id": "2026-11-28_IAD_UA421_N14563",
       "airport": "IAD",
       "flight_number": "UA421",
@@ -28685,50 +28729,6 @@
       },
       "status": "Scheduled",
       "fr24_url": "https://www.flightradar24.com/data/flights/g74473"
-    },
-    {
-      "id": "2026-11-28_IAD_C54259_NOREG",
-      "airport": "IAD",
-      "flight_number": "C54259",
-      "airline": {
-        "name": "UCA",
-        "iata": "C5",
-        "icao": "UCA"
-      },
-      "origin": {
-        "iata": "CAE",
-        "icao": "KCAE",
-        "name": "Columbia Metro",
-        "city": "Columbia"
-      },
-      "arrival": {
-        "scheduled_local": "2026-11-28T21:30:00-05:00",
-        "scheduled_utc": "2026-11-29T02:30:00Z",
-        "revised_local": null,
-        "terminal": null,
-        "gate": null
-      },
-      "aircraft": {
-        "reg": null,
-        "modeS": null,
-        "model": "E135",
-        "icao_type": "E135"
-      },
-      "rarity": "Common",
-      "rarity_reason": "Standard IAD Domestic / Regional Traffic",
-      "rarity_color": "#64748b",
-      "livery_or_note": null,
-      "plane_alert_match": false,
-      "plane_alert_category": null,
-      "plane_alert_tags": [],
-      "photo": {
-        "url": null,
-        "thumbnail": null,
-        "link": null,
-        "photographer": null
-      },
-      "status": "Scheduled",
-      "fr24_url": "https://www.flightradar24.com/data/flights/c54259"
     },
     {
       "id": "2026-11-28_IAD_YV6283_N89349",
