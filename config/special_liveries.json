@@ -64,5 +64,77 @@
     "airline": "Lufthansa",
     "rarity": "Epic",
     "source": "https://newsroom.lufthansagroup.com/en/lufthansa-a380-now-with-xxl-crane/"
+  },
+  "DABYN": {
+    "name": "Lufthansa 100th Anniversary Livery",
+    "airline": "Lufthansa",
+    "rarity": "Epic",
+    "source": "https://newsroom.lufthansagroup.com/en/an-anniversary-fleet-for-lufthansa/"
+  },
+  "DAIFA": {
+    "name": "Lufthansa 100th Anniversary Livery",
+    "airline": "Lufthansa",
+    "rarity": "Epic",
+    "source": "https://newsroom.lufthansagroup.com/en/lufthansas-first-airbus-a350-1000-arrives-with-a-special-livery/"
+  },
+  "DAIXL": {
+    "name": "Lufthansa 100th Anniversary Livery",
+    "airline": "Lufthansa",
+    "rarity": "Epic",
+    "source": "https://newsroom.lufthansagroup.com/en/an-anniversary-fleet-for-lufthansa/"
+  },
+  "DAING": {
+    "name": "Lufthansa 100th Anniversary Livery",
+    "airline": "Lufthansa",
+    "rarity": "Epic",
+    "source": "https://newsroom.lufthansagroup.com/en/lufthansa-group-at-ila-berlin-2026-anniversary-aircraft-and-lufthansa-technik-defense/"
+  },
+  "DAIND": {
+    "name": "Lufthansa 100th Anniversary Livery",
+    "airline": "Lufthansa",
+    "rarity": "Epic",
+    "source": "https://newsroom.lufthansagroup.com/en/an-anniversary-fleet-for-lufthansa/"
+  },
+  "DAIEM": {
+    "name": "Lufthansa Anniversary Employee Story Livery",
+    "airline": "Lufthansa",
+    "rarity": "Epic",
+    "source": "https://newsroom.lufthansagroup.com/en/employees-design-a-lufthansa-aircraft-for-the-anniversary/"
+  },
+  "N44550": {
+    "name": "United 100th Anniversary Markings",
+    "airline": "United Airlines",
+    "rarity": "Rare",
+    "source": "https://ir.united.com/static-files/d30e9cbf-c438-417f-b647-5fc29970f21e"
+  },
+  "N537JT": {
+    "name": "JetBlue Boston Love",
+    "airline": "JetBlue",
+    "rarity": "Epic",
+    "source": "https://www.airhistory.net/photo/899996/N537JT"
+  },
+  "N561JB": {
+    "name": "JetBlue Cloudtop Cruiser (Mario)",
+    "airline": "JetBlue",
+    "rarity": "Epic",
+    "source": "https://www.jetphotos.com/registration/N561JB"
+  },
+  "N599JB": {
+    "name": "JetBlue Quisqueya la Bluebella",
+    "airline": "JetBlue",
+    "rarity": "Epic",
+    "source": "https://www.netairspace.cc/photos/N599JB/JetBlue_Airways/Airbus_A320-232/FLL_KFLL_Ft_Lauderdale_International/photo_727415/"
+  },
+  "N3308J": {
+    "name": "JetBlue Blueprint II",
+    "airline": "JetBlue",
+    "rarity": "Epic",
+    "source": "https://commons.wikimedia.org/wiki/User:Coldstreamer20/jetBlue"
+  },
+  "N559AS": {
+    "name": "Alaska Airlines Salmon People (Xáat Ḵwáani)",
+    "airline": "Alaska Airlines",
+    "rarity": "Epic",
+    "source": "https://www.maximumperformanceaviation.com/special-liveries.html"
   }
 }
