@@ -46,6 +46,7 @@ ARRIVALS_JSON = DATA_DIR / "arrivals.json"
 SEEN_JSON = DATA_DIR / "seen_flights.json"
 PHOTO_CACHE_JSON = DATA_DIR / "photo_cache.json"
 USAGE_LEDGER_JSON = DATA_DIR / "api_usage_ledger.json"
+SPECIAL_LIVERIES_JSON = CONFIG_DIR / "special_liveries.json"
 
 # ---------------------------------------------------------------------------
 # External constants
@@ -286,6 +287,8 @@ def classify_rarity(
     airport: str,
     rarity_config: dict,
     airline: dict | None = None,
+    registration: str | None = None,
+    special_liveries: dict | None = None,
 ) -> tuple[str, str]:
     """
     Return (rarity_tier, rarity_reason) for a flight.
@@ -304,6 +307,11 @@ def classify_rarity(
     airline_name = re.sub(r"[^A-Z0-9]+", " ", (airline.get("name") or "").upper()).strip()
 
     is_copa = airline_code == "CM" or airline_icao == "CMP" or "COPA" in airline_name
+
+    reg_key = re.sub(r"[\s-]", "", (registration or "").upper())
+    livery = (special_liveries or {}).get(reg_key)
+    if livery:
+        return livery["rarity"], livery["name"]
 
     def apply_airline_rule(rarity: str, reason: str) -> tuple[str, str]:
         # Copa is explicitly a Rare airline, regardless of the common narrowbody types it flies.
@@ -663,9 +671,12 @@ def main():
     if not api_key:
         log.error("Missing FLIGHTAWARE_API_KEY GitHub Actions secret.")
         sys.exit(1)
+    if not ntfy_topic:
+        log.warning("NTFY_TOPIC is not configured; arrivals will refresh, but push notifications are disabled.")
 
     airports_config = load_json(AIRPORTS_JSON, {"active": ["DCA", "IAD"], "timezone_overrides": {}, "presets": []})
     rarity_config = load_json(RARITY_JSON, {"profiles": {}, "icao_type_normalization": {"keywords": []}})
+    special_liveries = load_json(SPECIAL_LIVERIES_JSON, {})
     active_airports = [str(a).upper() for a in airports_config.get("active", ["DCA", "IAD"])[:3]]
     tz_overrides = airports_config.get("timezone_overrides", {})
     if not active_airports:
@@ -744,7 +755,10 @@ def main():
                 if not icao_type and pa_entry.get("icao_type"):
                     flight["aircraft"]["icao_type"] = pa_entry["icao_type"]
                     icao_type = pa_entry["icao_type"]
-            rarity, reason = classify_rarity(icao_type, pa_entry, iata, rarity_config, flight["airline"])
+            rarity, reason = classify_rarity(
+                icao_type, pa_entry, iata, rarity_config, flight["airline"],
+                flight["aircraft"].get("reg"), special_liveries
+            )
             flight["rarity"] = rarity
             flight["rarity_reason"] = reason
             flight["rarity_color"] = RARITY_COLORS.get(rarity, "#64748b")

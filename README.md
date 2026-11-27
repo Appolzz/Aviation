@@ -17,9 +17,9 @@ The workflow asks for one result set at a time (`max_pages=1`) and follows every
 3. Create an AeroAPI key in the portal. Do not put it in a source file or commit it.
 4. In GitHub, open **Appolzz/Aviation → Settings → Secrets and variables → Actions → New repository secret**.
 5. Add `FLIGHTAWARE_API_KEY` and paste the key into its secret value.
-6. Optionally add `NTFY_TOPIC` for phone notifications. Create a private/unpredictable topic name in ntfy and subscribe to it in the ntfy app.
+6. Add `NTFY_TOPIC` for automatic phone notifications. Create a private/unpredictable topic name in ntfy and subscribe to it in the ntfy app; without this secret, arrivals still refresh but no phone alert can be sent.
 7. In **Settings → Pages**, choose **Deploy from a branch**, branch `main`, folder `/ (root)`.
-8. In **Actions**, select **Update LootRadar Arrivals** and run it once. Later runs check for fresh data every 10 minutes from 10 p.m. through 11 p.m. America/New_York time. The workflow uses UTC schedules with a local-time guard to handle daylight saving time, avoids GitHub's busier top-of-hour minute, and skips repeat fetches once tomorrow's data is complete.
+8. In **Actions**, select **Update LootRadar Arrivals** and run it once. Later runs check for fresh data every 10 minutes from 10 p.m. through 1:50 a.m. America/New_York time. The workflow uses UTC schedules with a local-time guard to handle daylight saving time, avoids GitHub's busier top-of-hour minute, and skips repeat fetches once tomorrow's data is complete. The extended retry window lets the workflow recover if GitHub delays or drops an earlier scheduled run.
 
 ## Change airports
 
@@ -32,6 +32,7 @@ Airport time zones are configured in `timezone_overrides`. Each scheduled update
 - New Rare, Epic, Legendary, and Mythic flights can be sent to ntfy; Uncommon flights remain on the dashboard but do not trigger notifications. Seen flight keys older than seven days are pruned.
 - The pipeline caches Planespotters photo URLs in `data/photo_cache.json` and queries photos for up to 60 Uncommon+ aircraft each run. Common cards can load a photo in the browser.
 - `config/rarity_rules.json` contains DCA, IAD, and DEFAULT (vacation airport) profiles and model normalization rules.
+- `config/special_liveries.json` assigns rarity by registration for tracked one-off liveries. It currently includes curated American, Delta, United, Southwest, and Lufthansa entries; registration assignments can change, so the source links are kept with each record.
 - Copa Airlines arrivals are classified Rare. Other flights are classified by aircraft type and special livery, so common regional and narrowbody aircraft stay Common regardless of operator.
 - Each flight card has a **Set rarity** control. Overrides are saved in this browser and reapplied when future flight data refreshes. They do not sync to other browsers or devices.
 - The source is scheduled-arrival data, not an operational airport feed. It includes available filed schedules, but cancellations, schedule changes, private aircraft, and provider coverage can still make it differ from Flightradar24 or actual operations. Gaps between scheduled arrivals may also be real quiet periods.
@@ -44,6 +45,7 @@ styles.css                     Responsive dark theme and rarity cards
 app.js                         Filtering, sorting, local times, photos, airport modal
 config/airports.json            Active airports, ICAO mappings, time zones, presets
 config/rarity_rules.json       Rarity profiles and aircraft model normalization
+config/special_liveries.json   Registration-based special livery rarity overrides
 data/arrivals.json              Dashboard data and budget status
 data/api_usage_ledger.json      Monthly local result-set and cost estimate
 data/seen_flights.json          Notification deduplication state

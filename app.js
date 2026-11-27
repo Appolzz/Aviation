@@ -418,6 +418,8 @@ function buildCardHTML(flight) {
   const time = formatArrivalTime(flight);
   const date = formatArrivalDate(flight);
   const statusClass = (flight.status || 'scheduled').toLowerCase();
+  const arrivalInstant = Date.parse(flight.arrival.revised_local || flight.arrival.scheduled_local || flight.arrival.scheduled_utc || '');
+  const hasArrived = Number.isFinite(arrivalInstant) && Date.now() - arrivalInstant > 15 * 60 * 1000;
   const hasPhoto = flight.photo && (flight.photo.url || flight.photo.thumbnail);
 
   // Terminal / gate display
@@ -473,7 +475,7 @@ function buildCardHTML(flight) {
   const reg = flight.aircraft.reg || '';
 
   return `
-    <div class="flight-card rarity-${rClass}"
+    <div class="flight-card rarity-${rClass}${hasArrived ? ' flight-card-arrived' : ''}"
          id="card-${esc(flight.id)}"
          data-id="${esc(flight.id)}"
          style="--card-color: ${color}; --card-glow: ${glow}">
@@ -499,6 +501,7 @@ function buildCardHTML(flight) {
           <span class="arrival-time">${time}<span class="time-tz">local</span></span>
           ${date ? `<span class="arrival-date">${esc(date)}</span>` : ''}
           <span class="status-badge ${statusClass}">${esc(flight.status || 'Scheduled')}</span>
+          ${hasArrived ? '<span class="arrival-state">Arrived</span>' : ''}
         </div>
 
         <!-- Flight number + airline -->
@@ -563,6 +566,38 @@ function renderFlightGrid(flights) {
   grid.hidden = false;
   grid.innerHTML = flights.map(f => buildCardHTML(f)).join('');
   observeAutomaticPhotos(flights);
+  updateScrollHour();
+}
+
+function updateScrollHour() {
+  const hint = document.getElementById('scroll-hour-hint');
+  if (!hint) return;
+  const cards = [...document.querySelectorAll('.flight-card')];
+  if (!cards.length) return;
+  const center = window.innerHeight / 2;
+  const card = cards.reduce((nearest, current) => {
+    const rect = current.getBoundingClientRect();
+    const distance = Math.abs((rect.top + rect.height / 2) - center);
+    return distance < nearest.distance ? { element: current, distance } : nearest;
+  }, { element: cards[0], distance: Infinity }).element;
+  const flight = state.flights.find(item => item.id === card.dataset.id);
+  const local = flight?.arrival?.revised_local || flight?.arrival?.scheduled_local || flight?.arrival?.scheduled_utc;
+  if (!local) return;
+  const date = new Date(local);
+  hint.textContent = date.toLocaleTimeString([], { hour: 'numeric' });
+  hint.classList.add('visible');
+  clearTimeout(hint._hideTimer);
+  hint._hideTimer = setTimeout(() => hint.classList.remove('visible'), 900);
+}
+
+function scrollToNextArrival() {
+  const now = Date.now();
+  const next = state.flights
+    .map(flight => ({ flight, time: Date.parse(flight.arrival.revised_local || flight.arrival.scheduled_local || flight.arrival.scheduled_utc || '') }))
+    .filter(item => Number.isFinite(item.time) && item.time > now)
+    .sort((a, b) => a.time - b.time)[0];
+  if (!next) return;
+  document.getElementById(`card-${next.flight.id}`)?.scrollIntoView({ behavior: 'instant', block: 'start' });
 }
 
 function renderModal(airports, presets) {
@@ -712,7 +747,6 @@ window.loadPhotoForCard = async function(flightId, btn) {
             </div>
           `;
         }
-        showToast('📸 Photo loaded!');
         return;
       }
     } catch { /* try next */ }
@@ -779,6 +813,7 @@ async function loadData() {
 
     loadingEl.style.display = 'none';
     renderAll();
+    requestAnimationFrame(() => setTimeout(scrollToNextArrival, 80));
 
   } catch (err) {
     console.error('Failed to load flight data:', err);
@@ -888,4 +923,9 @@ function attachEventListeners() {
 document.addEventListener('DOMContentLoaded', () => {
   attachEventListeners();
   loadData();
+  let scrollFrame = 0;
+  window.addEventListener('scroll', () => {
+    if (scrollFrame) return;
+    scrollFrame = requestAnimationFrame(() => { scrollFrame = 0; updateScrollHour(); });
+  }, { passive: true });
 });
