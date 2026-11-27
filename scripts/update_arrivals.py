@@ -24,6 +24,10 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+if __package__:
+    from .arrival_schedule import arrivals_are_fresh, target_date_for
+else:
+    from arrival_schedule import arrivals_are_fresh, target_date_for
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -670,6 +674,26 @@ def prune_seen(seen: dict, days: int = 7) -> dict:
 # ---------------------------------------------------------------------------
 
 def main():
+    airports_config = load_json(AIRPORTS_JSON, {"active": ["DCA", "IAD"], "timezone_overrides": {}, "presets": []})
+    active_airports = [str(a).upper() for a in airports_config.get("active", ["DCA", "IAD"])[:3]]
+    tz_overrides = airports_config.get("timezone_overrides", {})
+    if not active_airports:
+        log.error("No active airports configured.")
+        sys.exit(1)
+
+    now_utc = datetime.now(timezone.utc).replace(microsecond=0)
+    airport_target_dates = {
+        iata: target_date_for(now_utc, get_timezone(iata, tz_overrides)).isoformat()
+        for iata in active_airports
+    }
+    existing_arrivals = load_json(ARRIVALS_JSON, {})
+    if arrivals_are_fresh(existing_arrivals, active_airports, airport_target_dates):
+        log.info(
+            "Complete arrivals for target date %s already exist; skipping all API and enrichment requests.",
+            airport_target_dates[active_airports[0]],
+        )
+        return
+
     api_key = os.environ.get("FLIGHTAWARE_API_KEY", "").strip()
     ntfy_topic = os.environ.get("NTFY_TOPIC", "").strip()
     if not api_key:
@@ -678,14 +702,8 @@ def main():
     if not ntfy_topic:
         log.warning("NTFY_TOPIC is not configured; arrivals will refresh, but push notifications are disabled.")
 
-    airports_config = load_json(AIRPORTS_JSON, {"active": ["DCA", "IAD"], "timezone_overrides": {}, "presets": []})
     rarity_config = load_json(RARITY_JSON, {"profiles": {}, "icao_type_normalization": {"keywords": []}})
     special_liveries = load_json(SPECIAL_LIVERIES_JSON, {})
-    active_airports = [str(a).upper() for a in airports_config.get("active", ["DCA", "IAD"])[:3]]
-    tz_overrides = airports_config.get("timezone_overrides", {})
-    if not active_airports:
-        log.error("No active airports configured.")
-        sys.exit(1)
     prior_airport_counts = {}
     for prior_flight in load_json(ARRIVALS_JSON, {}).get("flights", []):
         prior_airport = str(prior_flight.get("airport") or "").upper()
@@ -722,8 +740,7 @@ def main():
     norm_map = build_normalization_map(rarity_config)
     reg_lookup, hex_lookup = download_plane_alert_db(session)
     all_flights = []
-    # Fetch the next calendar day's daytime arrivals (06:00–22:00 local).
-    now_utc = datetime.now(timezone.utc).replace(microsecond=0)
+    # Fetch the target service day's daytime arrivals (06:00–22:00 local).
     airport_timezones = {
         iata: get_timezone(iata, tz_overrides).key for iata in active_airports
     }
@@ -732,9 +749,9 @@ def main():
     for iata in active_airports:
         tz = get_timezone(iata, tz_overrides)
         icao = airport_icao(iata, airports_config)
-        next_day = now_utc.astimezone(tz).date() + timedelta(days=1)
-        interval_start = datetime.combine(next_day, datetime_time(6), tzinfo=tz).astimezone(timezone.utc)
-        interval_end = datetime.combine(next_day, datetime_time(22), tzinfo=tz).astimezone(timezone.utc)
+        target_day = date.fromisoformat(airport_target_dates[iata])
+        interval_start = datetime.combine(target_day, datetime_time(6), tzinfo=tz).astimezone(timezone.utc)
+        interval_end = datetime.combine(target_day, datetime_time(22), tzinfo=tz).astimezone(timezone.utc)
         local_start = interval_start.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
         local_end = interval_end.astimezone(tz).strftime("%Y-%m-%d %H:%M %Z")
         log.info("Fetching %s (%s) next-day arrivals: %s to %s", iata, icao, local_start, local_end)
@@ -830,19 +847,20 @@ def main():
     all_flights.sort(key=chronological_key)
     now = datetime.now(timezone.utc)
     primary_tz = get_timezone(active_airports[0], tz_overrides)
-    primary_next_day = now_utc.astimezone(primary_tz).date() + timedelta(days=1)
-    target_date = primary_next_day.strftime("%Y-%m-%d")
-    display_start = datetime.combine(primary_next_day, datetime_time(6), tzinfo=primary_tz).astimezone(timezone.utc)
-    display_end = datetime.combine(primary_next_day, datetime_time(22), tzinfo=primary_tz).astimezone(timezone.utc)
+    primary_target_day = date.fromisoformat(airport_target_dates[active_airports[0]])
+    target_date = primary_target_day.isoformat()
+    display_start = datetime.combine(primary_target_day, datetime_time(6), tzinfo=primary_tz).astimezone(timezone.utc)
+    display_end = datetime.combine(primary_target_day, datetime_time(22), tzinfo=primary_tz).astimezone(timezone.utc)
     ledger_entry = ledger.get(month, {})
     output = {"_meta": {
         "generated": now.isoformat(), "target_date": target_date, "airports": active_airports,
+        "airport_target_dates": airport_target_dates,
         "window_hours": 16, "window_start_utc": display_start.isoformat(),
         "window_end_utc": display_end.isoformat(), "airport_timezones": airport_timezones,
         "excluded_local_hours": "none",
         "total_flights": len(all_flights), "airport_flight_counts": airport_flight_counts,
         "rarity_counts": rarity_counts,
-        "last_updated_utc": now.isoformat(), "last_updated_local": datetime.now(ZoneInfo("America/New_York")).isoformat(),
+        "last_updated_utc": now.isoformat(), "last_updated_local": now.astimezone(primary_tz).isoformat(),
         "is_sample_data": False, "source": "FlightAware AeroAPI v4", "fetch_complete": complete,
         "budget": {"month": month, "estimated_cost_usd": max(month_spend, float(ledger_entry.get("estimated_cost_usd", 0))),
             "monthly_cap_usd": HARD_MONTHLY_CAP_USD, "free_credit_usd": 5.00,

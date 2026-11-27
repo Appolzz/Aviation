@@ -1,6 +1,6 @@
 # LootRadar — Daily Rare Flight & Livery Tracker
 
-LootRadar is a static GitHub Pages dashboard backed by a daily GitHub Actions pipeline. At 10 p.m. America/New_York local time, it loads available scheduled arrivals for the next calendar day from 6 a.m. to 10 p.m. local at DCA and IAD using FlightAware AeroAPI v4. It assigns airport-specific rarity, enriches aircraft with public livery/photo data, and can send Uncommon and higher alerts through ntfy.sh. Flights are listed by arrival time; rarity buttons filter the list without changing that order.
+LootRadar is a static GitHub Pages dashboard backed by a daily GitHub Actions pipeline. Starting at 10 p.m. in the configured primary airport's timezone, it loads available scheduled arrivals for the next service day from 6 a.m. to 10 p.m. local at DCA and IAD using FlightAware AeroAPI v4. It assigns airport-specific rarity, enriches aircraft with public livery/photo data, and can send Uncommon and higher alerts through ntfy.sh. Flights are listed by arrival time; rarity buttons filter the list without changing that order.
 
 ## Cost and budget protections
 
@@ -8,7 +8,7 @@ FlightAware lists `GET /airports/{id}/flights/scheduled_arrivals` at **$0.005 pe
 
 This is a software safety stop, not an account-level billing lock. FlightAware says usage reporting can lag around 10 minutes; other applications using the same AeroAPI account can consume the same credit. Keep the API key private and review usage in the FlightAware portal. The local ledger helps account for this project's current run even while FlightAware's usage page is delayed.
 
-The workflow asks for one result set at a time (`max_pages=1`) and follows every pagination cursor until all available results are retrieved or the monthly $4.25 ceiling is reached. It sleeps seven seconds between result sets, below the Personal plan's 10 result sets/minute limit. Transient GET failures are retried with backoff and server-provided retry delays. There is no per-run or per-airport page ceiling. If any airport fetch is interrupted, or an established airport unexpectedly returns zero timed arrivals, the run fails and keeps the last complete dashboard data instead of publishing a partial airport list. JSON snapshots are replaced atomically so an interrupted write cannot truncate the published data. Rows without a scheduled arrival time are omitted.
+The workflow asks for one result set at a time (`max_pages=1`) and follows every pagination cursor until all available results are retrieved or the monthly $4.25 ceiling is reached. It sleeps seven seconds between result sets, below the Personal plan's 10 result sets/minute limit. Transient GET failures are retried with backoff and server-provided retry delays. The workflow retries no more than hourly overnight; scheduled runs and manual runs both skip fetching when the complete target-date snapshot already exists. There is no per-run or per-airport page ceiling. If any airport fetch is interrupted, or an established airport unexpectedly returns zero timed arrivals, the run fails and keeps the last complete dashboard data instead of publishing a partial airport list. JSON snapshots are replaced atomically so an interrupted write cannot truncate the published data. Rows without a scheduled arrival time are omitted.
 
 ## Set up FlightAware
 
@@ -19,13 +19,13 @@ The workflow asks for one result set at a time (`max_pages=1`) and follows every
 5. Add `FLIGHTAWARE_API_KEY` and paste the key into its secret value.
 6. Add `NTFY_TOPIC` for automatic phone notifications. Create a private/unpredictable topic name in ntfy and subscribe to it in the ntfy app; without this secret, arrivals still refresh but no phone alert can be sent.
 7. In **Settings → Pages**, choose **Deploy from a branch**, branch `main`, folder `/ (root)`.
-8. In **Actions**, select **Update LootRadar Arrivals** and run it once. Later runs check for fresh data every 10 minutes from 10 p.m. through 1:50 a.m. America/New_York time. The workflow uses UTC schedules with a local-time guard to handle daylight saving time, avoids GitHub's busier top-of-hour minute, and skips repeat fetches once tomorrow's data is complete. The extended retry window lets the workflow recover if GitHub delays or drops an earlier scheduled run.
+8. In **Actions**, select **Update LootRadar Arrivals** and run it once. The hourly UTC schedule checks the primary airport's local time and runs between 10 p.m. and 6 a.m., accounting for daylight-saving transitions; a repeated fall-back hour is skipped. It skips all API and enrichment requests once complete target-date data is present, and retries incomplete or missed updates at most hourly (up to eight times) before 6 a.m. Retry windows improve recovery from delayed or failed runs but cannot guarantee completion during FlightAware or GitHub outages. Failed/incomplete fetches remain visible in the Actions logs and preserve the last complete dashboard data.
 
 ## Change airports
 
 Edit `config/airports.json` and set `active` to one to three IATA codes. DCA and IAD are active by default. `iata_to_icao` maps common IATA codes to AeroAPI airport IDs (for example, DCA → KDCA and HND → RJTT); other U.S. codes use the `K` + IATA fallback. Add an explicit mapping for any international airport not already listed.
 
-Airport time zones are configured in `timezone_overrides`. Each scheduled update fetches the next calendar day's arrivals from 06:00 through 22:00 in each airport's local time. The dashboard shows the arrival date and time range; flights are sorted by scheduled/revised arrival time. After committing a config change, use **Actions → Update LootRadar Arrivals → Run workflow** for an immediate refresh.
+Airport time zones are configured in `timezone_overrides`. Each scheduled update fetches the next service day's arrivals from 06:00 through 22:00 in each airport's local time. The dashboard shows the arrival date and time range; flights are sorted by scheduled/revised arrival time. After committing a config change, use **Actions → Update LootRadar Arrivals → Run workflow** for an immediate refresh.
 
 ## Notifications, photos, and rarity
 
