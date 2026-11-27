@@ -22,6 +22,8 @@ from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -107,7 +109,9 @@ def load_json(path: Path, default=None):
 
 def save_json(path: Path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    temporary_path = path.with_suffix(path.suffix + ".tmp")
+    temporary_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    os.replace(temporary_path, path)
 
 
 def get_timezone(iata: str, tz_overrides: dict) -> ZoneInfo:
@@ -689,6 +693,17 @@ def main():
 
     ledger = load_json(USAGE_LEDGER_JSON, {})
     session = requests.Session()
+    retry = Retry(
+        total=4,
+        connect=4,
+        read=2,
+        status=3,
+        backoff_factor=1,
+        status_forcelist=(429, 500, 502, 503, 504),
+        allowed_methods=frozenset({"GET"}),
+        respect_retry_after_header=True,
+    )
+    session.mount("https://", HTTPAdapter(max_retries=retry))
     # Keep credentials out of unrelated photo, livery-database, and ntfy requests.
     session.headers.update({"User-Agent": "LootRadar/1.0", "Accept": "application/json"})
 

@@ -44,12 +44,20 @@
   "N841MH": { "name": "Delta American Cancer Society", "airline": "Delta Air Lines", "rarity": "Epic", "source": "https://sites.google.com/site/deltaairlinesfleet/special-liveries" },
   "N844MH": { "name": "Delta SkyTeam", "airline": "Delta Air Lines", "rarity": "Rare", "source": "https://sites.google.com/site/deltaairlinesfleet/special-liveries" },
   "N845MH": { "name": "Delta Breast Cancer Research Foundation", "airline": "Delta Air Lines", "rarity": "Epic", "source": "https://sites.google.com/site/deltaairlinesfleet/special-liveries" },
-  "N91007": { "name": "United Stars and Stripes", "airline": "United Airlines", "rarity": "Epic", "source": "https://www.flightradar24.com/blog/flight-tracking-news/special-aircraft-tracking/united-adds-two-stars-and-stripes-special-livery-aircraft/" },
-  "N78285": { "name": "United Stars and Stripes", "airline": "United Airlines", "rarity": "Epic", "source": "https://www.flightradar24.com/blog/flight-tracking-news/special-aircraft-tracking/united-adds-two-stars-and-stripes-special-livery-aircraft/" },
+  "N75435": {
+    "name": "Continental Airlines Retro Heritage Livery",
+    "airline": "United Airlines",
+    "rarity": "Epic",
+    "source": "https://www.flightradar24.com/data/aircraft/n75435",
+    "verified_as_of": "2026-11-25",
+    "verification_note": "Listed as United's Continental Retro Livery on FlightRadar24 in November 2026; this is a heritage scheme, not United's current standard livery."
+  },
+  "N91007": { "name": "United Stars and Stripes (America250)", "airline": "United Airlines", "rarity": "Epic", "source": "https://www.flightradar24.com/blog/flight-tracking-news/special-aircraft-tracking/united-adds-two-stars-and-stripes-special-livery-aircraft/", "verified_as_of": "2026-06-16" },
+  "N78285": { "name": "United Stars and Stripes (America250)", "airline": "United Airlines", "rarity": "Epic", "source": "https://www.flightradar24.com/blog/flight-tracking-news/special-aircraft-tracking/united-adds-two-stars-and-stripes-special-livery-aircraft/", "verified_as_of": "2026-06-16" },
   "N500WR": { "name": "Southwest Freedom One", "airline": "Southwest Airlines", "rarity": "Epic", "source": "https://www.flightradar24.com/blog/flight-tracking-news/special-aircraft-tracking/airlines-celebrate-united-states-semiquincentennial-with-special-liveries/" },
   "N8710M": { "name": "Southwest Imua One", "airline": "Southwest Airlines", "rarity": "Epic", "source": "https://www.planetrackapp.com/airlines/usa/southwest-airlines" },
-  "N8719Q": { "name": "Southwest Liberty One", "airline": "Southwest Airlines", "rarity": "Epic", "source": "https://www.flightradar24.com/blog/aviation-news/airline-news/southwest-introduces-independence-one-livery/" },
-  "N1776R": { "name": "Southwest Independence One", "airline": "Southwest Airlines", "rarity": "Epic", "source": "https://www.flightradar24.com/blog/aviation-news/airline-news/southwest-introduces-independence-one-livery/" },
+  "N8719Q": { "name": "Southwest Liberty One", "airline": "Southwest Airlines", "rarity": "Epic", "source": "https://free.flightradar24.com/data/aircraft/n8719q", "verified_as_of": "2026-11-07" },
+  "N1776R": { "name": "Southwest Independence One", "airline": "Southwest Airlines", "rarity": "Epic", "source": "https://www.flightradar24.com/blog/aviation-news/airline-news/southwest-introduces-independence-one-livery/", "verified_as_of": "2026-04-28" },
   "N8660A": { "name": "Southwest Lone Star One", "airline": "Southwest Airlines", "rarity": "Rare", "source": "https://www.planetrackapp.com/airlines/usa/southwest-airlines" },
   "N955WN": { "name": "Southwest Arizona One", "airline": "Southwest Airlines", "rarity": "Rare", "source": "https://www.planetrackapp.com/airlines/usa/southwest-airlines" },
   "N8653A": { "name": "Southwest California One", "airline": "Southwest Airlines", "rarity": "Rare", "source": "https://www.planetrackapp.com/airlines/usa/southwest-airlines" },
@@ -108,10 +116,29 @@
     "source": "https://ir.united.com/static-files/d30e9cbf-c438-417f-b647-5fc29970f21e"
   },
   "N537JT": {
-    "name": "JetBlue Boston Love",
+    "name": "JetBlue Wicked Blue (Boston)",
     "airline": "JetBlue",
     "rarity": "Epic",
-    "source": "https://www.airhistory.net/photo/899996/N537JT"
+    "source": "https://news.jetblue.com/latest-news/press-release-details/2025/JetBlue-Unveils-Wicked-Blue-a-Boston-Inspired-Livery-Celebrating-Two-Decades-as-the-Citys-Favorite-Airline/default.aspx",
+    "verified_as_of": "2025-12-19"
+  },
+  "N970JB": {
+    "name": "JetBlue BlueUnity 25th Anniversary",
+    "airline": "JetBlue",
+    "rarity": "Epic",
+    "source": "https://news.jetblue.com/latest-news/press-release-details/2025/JetBlue-Celebrates-25-Years-of-Bringing-Humanity-Back-to-Air-Travel/default.aspx",
+    "registration_source": "https://simpleflying.com/jetblue-dedicates-anniversary-livery-crewmembers/",
+    "verified_as_of": "2025-02-12",
+    "verification_note": "Tail number and livery were reported together for its anniversary debut; continued paint status has not been rechecked."
+  },
+  "N615JB": {
+    "name": "JetBlue Blue Bravest (FDNY)",
+    "airline": "JetBlue",
+    "rarity": "Epic",
+    "source": "https://mediaroom.jetblue.com/latest-news/press-release-details/2013/JetBlue-New-Yorks-Hometown-AirlineTM-Debuts-Blue-Bravest-Livery-Dedicated-to-the-FDNY-Foundation-10-23-2013/default.aspx",
+    "registration_source": "https://www.airfleets.net/flottecie/JetBlue%20Airways-active-a320-70-dddesc.htm",
+    "verified_as_of": "2026-05-05",
+    "verification_note": "Airfleets listed N615JB as an active A320 named Blue Bravest in 2026; confirm current paint before treating as current."
   },
   "N561JB": {
     "name": "JetBlue Cloudtop Cruiser (Mario)",
@@ -136,5 +163,31 @@
     "airline": "Alaska Airlines",
     "rarity": "Epic",
     "source": "https://www.maximumperformanceaviation.com/special-liveries.html"
+  },
+  "N596AS": {
+    "name": "Alaska Airlines Tiana's Bayou Adventure Flyer",
+    "airline": "Alaska Airlines",
+    "rarity": "Epic",
+    "source": "https://news.alaskaair.com/guest-experience/alaska-airlines-livery-tianas-bayou-adventure-flyer-celebrates-spirit-of-adventure/",
+    "verified_as_of": "2025-04-25",
+    "verification_note": "Alaska announced the aircraft would fly its network for the next several years; repaint status may change."
+  },
+  "N933AK": {
+    "name": "Alaska Airlines Seattle Kraken",
+    "airline": "Alaska Airlines",
+    "rarity": "Epic",
+    "source": "https://news.alaskaair.com/community/alaska-airlines-seattle-kraken-aircraft-2024/",
+    "verified_as_of": "2024-10-07",
+    "verification_note": "Alaska said the livery would fly during the 2024–2026 seasons; check current paint status after that period."
+  },
+  "CGEGC": {
+    "name": "Air Canada Team Canada Winter Games Livery",
+    "registration": "C-GEGC",
+    "airline": "Air Canada",
+    "rarity": "Epic",
+    "source": "https://www.aircanada.com/media/fly-the-flag-air-canada-unveils-celebratory-canadian-olympic-and-paralympic-team-livery-featuring-canadian-athletes-headed-to-the-milano-cortina-2026-winter-games/",
+    "registration_source": "https://simpleflying.com/air-canada-celebrates-olympians-special-a330-livery-2026-games/",
+    "verified_as_of": "2025-11-27",
+    "verification_note": "Introduced for the Milano Cortina 2026 Games; continued display after the event has not been confirmed."
   }
 }

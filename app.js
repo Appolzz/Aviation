@@ -117,7 +117,14 @@ let state = {
   hideCommon: false,
   searchQuery: '',
   photoLookups: new Set(),
+  showLanded: false,
 };
+
+function isFlightLanded(flight) {
+  if ((flight.status || '').toLowerCase() === 'landed') return true;
+  const arrivalInstant = Date.parse(flight.arrival.revised_local || flight.arrival.scheduled_local || flight.arrival.scheduled_utc || '');
+  return Number.isFinite(arrivalInstant) && Date.now() - arrivalInstant > 15 * 60 * 1000;
+}
 
 // ============================================================
 // Utils
@@ -418,8 +425,7 @@ function buildCardHTML(flight) {
   const time = formatArrivalTime(flight);
   const date = formatArrivalDate(flight);
   const statusClass = (flight.status || 'scheduled').toLowerCase();
-  const arrivalInstant = Date.parse(flight.arrival.revised_local || flight.arrival.scheduled_local || flight.arrival.scheduled_utc || '');
-  const hasArrived = Number.isFinite(arrivalInstant) && Date.now() - arrivalInstant > 15 * 60 * 1000;
+  const hasArrived = isFlightLanded(flight);
   const hasPhoto = flight.photo && (flight.photo.url || flight.photo.thumbnail);
 
   // Terminal / gate display
@@ -553,20 +559,37 @@ function renderFlightGrid(flights) {
   const grid = document.getElementById('flights-grid');
   const empty = document.getElementById('empty-state');
   const countEl = document.getElementById('result-count-num');
+  const active = flights.filter(flight => !isFlightLanded(flight));
+  const landed = flights.filter(isFlightLanded);
 
   countEl.textContent = flights.length;
 
   if (flights.length === 0) {
     grid.hidden = true;
     empty.hidden = false;
+    updateMobileScrollbar();
     return;
   }
 
   empty.hidden = true;
   grid.hidden = false;
-  grid.innerHTML = flights.map(f => buildCardHTML(f)).join('');
-  observeAutomaticPhotos(flights);
+  const landedGate = landed.length ? `
+    <section class="landed-gate${state.showLanded ? ' expanded' : ''}" aria-label="Landed flights">
+      <div class="landed-gate-message">
+        <p>${active.length
+          ? `${landed.length} flight${landed.length === 1 ? '' : 's'} already landed`
+          : `All ${landed.length} flight${landed.length === 1 ? '' : 's'} landed for today`}</p>
+        <button type="button" class="btn-show-landed" id="btn-show-landed" aria-expanded="${state.showLanded}">
+          ${state.showLanded ? 'Hide landed flights' : 'Look at landed flights'}
+        </button>
+      </div>
+      ${state.showLanded ? `<div class="landed-flight-grid">${landed.map(flight => buildCardHTML(flight)).join('')}</div>` : ''}
+    </section>
+  ` : '';
+  grid.innerHTML = `${active.map(flight => buildCardHTML(flight)).join('')}${landedGate}`;
+  observeAutomaticPhotos(active.concat(state.showLanded ? landed : []));
   updateScrollHour();
+  updateMobileScrollbar();
 }
 
 function updateScrollHour() {
@@ -591,13 +614,48 @@ function updateScrollHour() {
 }
 
 function scrollToNextArrival() {
-  const now = Date.now();
-  const next = state.flights
-    .map(flight => ({ flight, time: Date.parse(flight.arrival.revised_local || flight.arrival.scheduled_local || flight.arrival.scheduled_utc || '') }))
-    .filter(item => Number.isFinite(item.time) && item.time > now)
-    .sort((a, b) => a.time - b.time)[0];
-  if (!next) return;
-  document.getElementById(`card-${next.flight.id}`)?.scrollIntoView({ behavior: 'instant', block: 'start' });
+  const firstActive = state.flights.find(flight => !isFlightLanded(flight));
+  if (!firstActive) return;
+  document.getElementById(`card-${firstActive.id}`)?.scrollIntoView({ behavior: 'instant', block: 'start' });
+}
+
+async function fetchJSONWithRetry(url, attempts = 3) {
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    try {
+      const response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Request failed (${response.status} ${response.statusText})`);
+      return await response.json();
+    } catch (error) {
+      lastError = error;
+      if (attempt + 1 < attempts) {
+        await new Promise(resolve => setTimeout(resolve, 400 * (2 ** attempt)));
+      }
+    }
+  }
+  throw lastError;
+}
+
+function updateMobileScrollbar() {
+  const scrollbar = document.getElementById('mobile-scrollbar');
+  if (!scrollbar) return;
+  const thumb = scrollbar.querySelector('.mobile-scrollbar-thumb');
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  scrollbar.hidden = maxScroll <= 0;
+  if (maxScroll <= 0) return;
+  const travel = scrollbar.clientHeight - thumb.offsetHeight;
+  const progress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+  thumb.style.transform = `translateY(${travel * progress}px)`;
+  scrollbar.setAttribute('aria-valuenow', String(Math.round(progress * 100)));
+}
+
+function setScrollFromPointer(event) {
+  const scrollbar = document.getElementById('mobile-scrollbar');
+  const thumb = scrollbar.querySelector('.mobile-scrollbar-thumb');
+  const travel = scrollbar.clientHeight - thumb.offsetHeight;
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = Math.min(1, Math.max(0, (event.clientY - scrollbar.getBoundingClientRect().top - thumb.offsetHeight / 2) / travel));
+  window.scrollTo({ top: progress * maxScroll, behavior: 'instant' });
 }
 
 function renderModal(airports, presets) {
@@ -788,15 +846,16 @@ async function loadData() {
 
   try {
     // Load arrivals and airports config in parallel
-    const [arrivalsResp, airportsResp] = await Promise.all([
-      fetch(`data/arrivals.json?_=${Date.now()}`),
-      fetch(`config/airports.json?_=${Date.now()}`),
+    const [arrivals, airportsConfig] = await Promise.all([
+      fetchJSONWithRetry(`data/arrivals.json?_=${Date.now()}`),
+      fetchJSONWithRetry(`config/airports.json?_=${Date.now()}`),
     ]);
 
-    const arrivals = await arrivalsResp.json();
-    const airportsConfig = await airportsResp.json();
+    if (!arrivals || !Array.isArray(arrivals.flights) || !airportsConfig || typeof airportsConfig !== 'object') {
+      throw new Error('The flight data files have an unexpected format.');
+    }
 
-    state.flights = arrivals.flights || [];
+    state.flights = arrivals.flights;
     applySavedRarityOverrides();
     state.meta = arrivals._meta || {};
     state.airports = state.meta.airports || airportsConfig.active || [];
@@ -855,6 +914,38 @@ function attachEventListeners() {
     } catch {
       showToast('Could not save rarity in this browser');
     }
+  });
+  document.getElementById('flights-grid').addEventListener('click', event => {
+    if (!event.target.closest('#btn-show-landed')) return;
+    state.showLanded = !state.showLanded;
+    renderAll();
+  });
+
+  const mobileScrollbar = document.getElementById('mobile-scrollbar');
+  let draggingScrollbar = false;
+  mobileScrollbar.addEventListener('pointerdown', event => {
+    draggingScrollbar = true;
+    mobileScrollbar.setPointerCapture(event.pointerId);
+    setScrollFromPointer(event);
+    event.preventDefault();
+  });
+  mobileScrollbar.addEventListener('pointermove', event => {
+    if (draggingScrollbar) setScrollFromPointer(event);
+  });
+  mobileScrollbar.addEventListener('pointerup', () => { draggingScrollbar = false; });
+  mobileScrollbar.addEventListener('pointercancel', () => { draggingScrollbar = false; });
+  mobileScrollbar.addEventListener('keydown', event => {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const current = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+    const step = event.key === 'PageDown' || event.key === 'PageUp' ? 0.2 : 0.05;
+    const next = event.key === 'Home' ? 0
+      : event.key === 'End' ? 1
+      : event.key === 'ArrowDown' || event.key === 'PageDown' ? current + step
+      : event.key === 'ArrowUp' || event.key === 'PageUp' ? current - step
+      : null;
+    if (next === null) return;
+    event.preventDefault();
+    window.scrollTo({ top: Math.min(maxScroll, Math.max(0, next * maxScroll)), behavior: 'instant' });
   });
 
   // Rarity pills
@@ -924,8 +1015,22 @@ document.addEventListener('DOMContentLoaded', () => {
   attachEventListeners();
   loadData();
   let scrollFrame = 0;
+  let previousScrollY = window.scrollY;
   window.addEventListener('scroll', () => {
+    const currentY = window.scrollY;
+    if (window.innerWidth <= 600) {
+      document.body.classList.toggle('filters-peek', currentY < previousScrollY - 2 && currentY > 24);
+    } else {
+      document.body.classList.remove('filters-peek');
+    }
+    previousScrollY = currentY;
     if (scrollFrame) return;
-    scrollFrame = requestAnimationFrame(() => { scrollFrame = 0; updateScrollHour(); });
+    scrollFrame = requestAnimationFrame(() => {
+      scrollFrame = 0;
+      updateScrollHour();
+      updateMobileScrollbar();
+    });
   }, { passive: true });
+  window.addEventListener('resize', updateMobileScrollbar);
+  updateMobileScrollbar();
 });

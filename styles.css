@@ -491,9 +491,9 @@ code, .mono {
   min-height: calc(100dvh - var(--header-h) - var(--filter-h));
 }
 
-.flight-card { scroll-margin-top: 24px; }
-.flight-card-arrived { opacity: .42; filter: saturate(.55); }
-.flight-card-arrived:hover { opacity: .72; }
+.flight-card { scroll-margin-top: 150px; }
+.flight-card-arrived { opacity: .24; filter: saturate(.4); }
+.flight-card-arrived:hover { opacity: .42; }
 .arrival-state {
   align-self: center;
   color: #94a3b8;
@@ -530,6 +530,40 @@ code, .mono {
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 16px;
 }
+
+.landed-gate {
+  grid-column: 1 / -1;
+  padding: 14px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  background: rgba(13,17,23,.94);
+}
+.landed-gate-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.landed-gate-message p { margin: 0; color: var(--text-secondary); font-weight: 600; }
+.btn-show-landed {
+  min-height: 40px;
+  padding: 7px 12px;
+  border: 1px solid var(--border-mid);
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: var(--brand-light);
+  font: inherit;
+  cursor: pointer;
+}
+.btn-show-landed:hover { background: #30343a; }
+.landed-flight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.mobile-scrollbar { display: none; }
 
 /* Loading state */
 .loading-state {
@@ -1185,6 +1219,7 @@ code, .mono {
   .filter-controls { width: 100%; justify-content: space-between; }
   .search-input { width: 170px; }
   .flights-grid { grid-template-columns: 1fr; }
+  .landed-flight-grid { grid-template-columns: 1fr; }
   .preset-grid { grid-template-columns: 1fr; }
 }
 
@@ -1228,6 +1263,7 @@ code, .mono {
   .btn-vacation-full { display: none; }
   .btn-vacation-short { display: inline; }
   .filter-section { top: 86px; }
+  .flight-card { scroll-margin-top: 150px; }
   .flights-container { padding: 12px 10px 36px; }
   .flights-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1335,7 +1371,16 @@ body {
 .filter-menu-toggle { display: none; }
 @media (max-width: 600px) {
   html, body { width: 100%; max-width: 100%; overflow-x: clip; }
-  .filter-section { top: auto; position: sticky; z-index: 90; padding: 8px 10px; }
+  .filter-section { top: 86px; position: sticky; z-index: 90; padding: 8px 10px; }
+  body.filters-peek .app-header { transform: translateY(-100%); z-index: 80; }
+  body.filters-peek .filter-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+  }
+  .app-header { transition: transform .18s ease; }
   .filter-inner { padding: 0; gap: 0; min-width: 0; }
   .filter-menu-toggle {
     display: flex;
@@ -1369,6 +1414,44 @@ body {
   .btn-toggle-common { justify-content: center; padding: 6px 10px; font-size: .68rem; }
   .result-count { grid-column: 1 / -1; text-align: right; }
   .flights-container, .flights-grid, .flight-card { min-width: 0; max-width: 100%; }
+  .landed-gate { padding: 10px; }
+  .landed-gate-message { align-items: flex-start; flex-direction: column; }
+  .btn-show-landed { width: 100%; }
+  .landed-flight-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .mobile-scrollbar {
+    position: fixed;
+    z-index: 110;
+    top: 28vh;
+    right: 0;
+    display: block;
+    width: 24px;
+    height: 44vh;
+    min-height: 120px;
+    touch-action: none;
+    cursor: grab;
+  }
+  .mobile-scrollbar[hidden] { display: none; }
+  .mobile-scrollbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 8px;
+    width: 4px;
+    border-radius: 4px;
+    background: rgba(139,148,158,.24);
+  }
+  .mobile-scrollbar-thumb {
+    position: absolute;
+    top: 0;
+    right: 5px;
+    width: 10px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(139,148,158,.82);
+    box-shadow: 0 1px 5px rgba(0,0,0,.45);
+  }
+  .mobile-scrollbar:active { cursor: grabbing; }
 }
 
 /* Animated card entrance stagger */

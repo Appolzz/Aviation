@@ -169,6 +169,11 @@
   <!-- ======================== FLIGHTS GRID ======================== -->
   <main class="flights-container" id="flights-container">
     <div class="scroll-hour-hint" id="scroll-hour-hint" aria-hidden="true"></div>
+    <div class="mobile-scrollbar" id="mobile-scrollbar" role="scrollbar" aria-label="Scroll through flights"
+         aria-controls="flights-grid" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100"
+         aria-valuenow="0" tabindex="0" hidden>
+      <span class="mobile-scrollbar-thumb"></span>
+    </div>
     <!-- Loading state -->
     <div class="loading-state" id="loading-state">
       <div class="loading-spinner"></div>
