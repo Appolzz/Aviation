@@ -1,4 +1,11 @@
 {
   "_comment": "Photo cache: maps registration/hex to Planespotters photo data. Prevents redundant API calls.",
-  "_format": "REG_OR_HEX: {url, thumbnail, link, photographer, cached_at}"
+  "_format": "REG_OR_HEX: {url, thumbnail, link, photographer, cached_at}",
+  "N37018": {
+    "url": "https://t.plnspttrs.net/16808/1987501_2fe7c2d9cc_280.jpg",
+    "thumbnail": "https://t.plnspttrs.net/16808/1987501_2fe7c2d9cc_280.jpg",
+    "link": "https://www.planespotters.net/photo/1987501/n37018-united-airlines-boeing-777-224er?utm_source=api",
+    "photographer": "Alon Varshaver ",
+    "cached_at": "2026-11-28T04:17:30.138765+00:00"
+  }
 }
